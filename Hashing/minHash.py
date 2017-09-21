@@ -1,23 +1,31 @@
 import random
-from DataPreparation import FastaIO, KGrams
+from queue import Queue
+
+from DataOperations import FastaIO, KGrams, graphOperations
+import networkx as nx
+import timeit
+import matplotlib.pyplot as plt
 
 
 def LSH(signature_matrix, reads, b, r):
     pass
 
 
-def getMinHashFunctions(reads, k, r, n):
+def getMinHashFunctions(reads, k, r, n, m, b):
     """Return signature matrix
     reads: list of reads
     k: length of each one of k-mers
     n: number of hash functions
     r: number of rows
+    b: number of bands
+    n = b * m
     """
+    start = timeit.default_timer()
 
     # get random k-grams representing the rows of similarity matrix
     # k-grams are hashed to 32bit integers for more convenience.
-    all_6_grams = KGrams.generate_all_k_grams(k, ['A', 'C', 'G', 'T'])
-    random_grams = KGrams.get_random_k_grams(all_6_grams, r)
+    all_k_grams = KGrams.generate_all_k_grams(k, ['A', 'C', 'G', 'T'])
+    random_grams = KGrams.get_random_k_grams(all_k_grams, r)
 
     read_id_list = []
 
@@ -27,10 +35,15 @@ def getMinHashFunctions(reads, k, r, n):
     for read in reads:
         read_id_list.append(read.id)
         k_gram_dictionary[read.id] = KGrams.find_k_grams(read.seq, k)
+        print(set(k_gram_dictionary[read.id]))
         if t >= 100:
             break
         t += 1
 
+    for read_id1 in k_gram_dictionary:
+        for read_id2 in k_gram_dictionary:
+            if read_id1 != read_id2:
+                print(len(set(k_gram_dictionary[read_id1]).intersection(set(k_gram_dictionary[read_id2]))) / len(set(k_gram_dictionary[read_id1]).union(set(k_gram_dictionary[read_id2]))))
     # get hash functions
     hash_functions = createHashFunctions(n, r)
 
@@ -72,11 +85,15 @@ def getMinHashFunctions(reads, k, r, n):
     for read_id in read_id_list:
         LSH_dict[read_id] = []
 
-    b = 5
-    m = 4
+    band_dictionary = {}
+
+    max_value = bandHashFunction(m * [100])
+
     for read_id in read_id_list:
+
         integer_list = []  # it should have m elements
         hash_function_counter = 0
+        band_counter = 0
 
         for hash_function_index in signature_dictionary:
 
@@ -84,11 +101,37 @@ def getMinHashFunctions(reads, k, r, n):
             hash_function_counter += 1
 
             if hash_function_counter == m:
-                LSH_dict[read_id].append(bandHashFunction(integer_list))
+                hashedValue = bandHashFunction(integer_list)
+                LSH_dict[read_id].append(hashedValue)
+
+                # add read to the bucket corresponding the band
+                band_counter += 1
+                if hashedValue != max_value:
+                    band_dictionary.setdefault((band_counter, hashedValue), []).append(read_id)
                 hash_function_counter = 0
                 integer_list = []
 
-        print(LSH_dict[read_id])
+    print(band_dictionary)
+    stop = timeit.default_timer()
+
+    print(stop - start)
+
+    # Create graph
+    G = nx.Graph()
+    for read_id in read_id_list:
+        G.add_node(read_id)
+
+    for key in band_dictionary:
+        if len(band_dictionary[key]) > 1:
+            for i in range(1, len(band_dictionary[key])):
+                G.add_edge(band_dictionary[key][0], band_dictionary[key][i])
+
+    FastaIO.write_LSH_matrix('LSH10K7', LSH_dict)
+    FastaIO.write_graph_to_csv('graph10K7', G)
+
+    nx.draw(G)
+    plt.show()
+    return LSH_dict
 
 
 def createRepresentationMatrix(k, row_numbers, columns):
@@ -135,7 +178,8 @@ def createHashFunctions(n, p):
 
 
 dataset = FastaIO.read_fasta_file('../files/reads50.fasta')
-getMinHashFunctions(dataset, 6, 29, 20)
+getMinHashFunctions(dataset, 7, 51, 28, 7, 4)
+
 """
 k = 8
 k_gram_dictionary = {}

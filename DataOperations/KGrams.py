@@ -31,5 +31,6 @@ def get_random_k_grams(token_set, number_of_items):
         # final_set.append(binascii.crc32(bytes(token_set[index], 'ascii')) & 0xffffffff)
         final_set.append(token_set[index])
 
+    print(final_set)
     return final_set
 
