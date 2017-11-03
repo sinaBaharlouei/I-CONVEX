@@ -8,7 +8,6 @@ def find_connected_components(G):
 
     queue = Queue()
     nodes = G.nodes()
-
     for node in nodes:
         marked_dict[node] = False
         cluster_dict[node] = -1

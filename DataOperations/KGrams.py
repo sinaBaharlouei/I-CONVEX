@@ -7,8 +7,9 @@ def find_k_grams(record, k):
     k_gram_array = []
     length = len(record)
     for i in range(length - k):
-        # k_gram_array.append(binascii.crc32(bytes(str(record[i:i + k]), 'ascii')) & 0xffffffff)
-        k_gram_array.append(record[i:i + k])
+        k_gram_array.append(hash(str(record[i:i + k])) & 0xffffffff)
+
+    # print(k_gram_array)
     return k_gram_array
 
 
@@ -28,9 +29,7 @@ def get_random_k_grams(token_set, number_of_items):
     final_set = []
     indices = random.sample(range(len(token_set)), number_of_items)
     for index in indices:
-        # final_set.append(binascii.crc32(bytes(token_set[index], 'ascii')) & 0xffffffff)
-        final_set.append(token_set[index])
-
-    print(final_set)
+        final_set.append(hash(token_set[index]) & 0xffffffff)
+        # final_set.append(token_set[index])
     return final_set
 
