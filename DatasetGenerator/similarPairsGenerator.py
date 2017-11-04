@@ -40,7 +40,7 @@ def noise(read, Pi, Pd):
 
         if not is_inserted and not is_deleted:
             j += 1
-        elif is_inserted and  not is_deleted:
+        elif is_inserted and not is_deleted:
             j += 2
         elif is_inserted and is_deleted:
             j += 1
@@ -56,22 +56,31 @@ def shiftString(read, shift_index_range):
     beginningShiftIndex = random.randint(-shift_index_range, shift_index_range)
     endShiftIndex = random.randint(-shift_index_range, shift_index_range)
 
-    str1 = ''
-    if beginningShiftIndex < 0: # insert some letters to the beginning of string
+    print(beginningShiftIndex)
+    print(endShiftIndex)
+    if beginningShiftIndex < 0:  # insert some letters to the beginning of string
+        str1 = ''
         for i in range(-beginningShiftIndex):
             str1 += letterList[random.randint(0, 3)]
-            read = str1 + read
+        read = str1 + read
 
     else:
         read = read[beginningShiftIndex:]
 
-    res = ""
-    for i in range(length):
-        res += letterList[random.randint(0, 3)]
+    print(read)
 
-    print(res)
-    return res
+    if endShiftIndex < 0:  # add some letters to the end
+        str2 = ""
+        for i in range(-endShiftIndex):
+            str2 += letterList[random.randint(0, 3)]
+        read += str2
+
+    elif endShiftIndex > 0:  # remove some letters from the end
+       read = read[:-endShiftIndex]
+    print(read)
+    return read
 
 
-generateRandomRNA(100)
-print(noise("SinaBaharlouei", 0.5, 0.5))
+for i in range(100):
+    p1 = generateRandomRNA(400)
+    p2 = noise(shiftString(p1, 5), 0.02, 0.02)
