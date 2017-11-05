@@ -1,4 +1,6 @@
+import csv
 import random
+from Bio import SeqIO
 
 
 def generateRandomRNA(length):
@@ -10,7 +12,6 @@ def generateRandomRNA(length):
     for i in range(length):
         res += letterList[random.randint(0, 3)]
 
-    print(res)
     return res
 
 
@@ -45,7 +46,7 @@ def noise(read, Pi, Pd):
         elif is_inserted and is_deleted:
             j += 1
 
-    return str(b)
+    return b.decode(encoding='utf-8')
 
 
 def shiftString(read, shift_index_range):
@@ -56,8 +57,6 @@ def shiftString(read, shift_index_range):
     beginningShiftIndex = random.randint(-shift_index_range, shift_index_range)
     endShiftIndex = random.randint(-shift_index_range, shift_index_range)
 
-    print(beginningShiftIndex)
-    print(endShiftIndex)
     if beginningShiftIndex < 0:  # insert some letters to the beginning of string
         str1 = ''
         for i in range(-beginningShiftIndex):
@@ -67,7 +66,6 @@ def shiftString(read, shift_index_range):
     else:
         read = read[beginningShiftIndex:]
 
-    print(read)
 
     if endShiftIndex < 0:  # add some letters to the end
         str2 = ""
@@ -77,10 +75,21 @@ def shiftString(read, shift_index_range):
 
     elif endShiftIndex > 0:  # remove some letters from the end
        read = read[:-endShiftIndex]
-    print(read)
     return read
 
+with open('similarPairs.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',',
+                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(['Seq1', 'Seq2'])
+    for i in range(100000):
+        p1 = generateRandomRNA(400)
+        p2 = noise(shiftString(p1, 5), 0.02, 0.02)
 
-for i in range(100):
-    p1 = generateRandomRNA(400)
-    p2 = noise(shiftString(p1, 5), 0.02, 0.02)
+        if len(p2) > len(p1):
+            p2 = p2[:len(p1)] # cut p2
+
+        elif len(p1) > len(p2):
+            res = generateRandomRNA(len(p1) - len(p2))
+            p2 += res
+        writer.writerow([p1, p2])
+
