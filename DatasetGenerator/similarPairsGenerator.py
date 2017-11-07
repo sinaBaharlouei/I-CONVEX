@@ -66,7 +66,6 @@ def shiftString(read, shift_index_range):
     else:
         read = read[beginningShiftIndex:]
 
-
     if endShiftIndex < 0:  # add some letters to the end
         str2 = ""
         for i in range(-endShiftIndex):
@@ -74,22 +73,23 @@ def shiftString(read, shift_index_range):
         read += str2
 
     elif endShiftIndex > 0:  # remove some letters from the end
-       read = read[:-endShiftIndex]
+        read = read[:-endShiftIndex]
     return read
 
-with open('similarPairs.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile, delimiter=',',
+
+def generateSimilarPairs(filename, read_length, read_numbers):
+    with open('similarPairs500K.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(['Seq1', 'Seq2'])
-    for i in range(100000):
-        p1 = generateRandomRNA(400)
-        p2 = noise(shiftString(p1, 5), 0.02, 0.02)
+        writer.writerow(['Seq1', 'Seq2'])
+        for i in range(read_numbers):
+            p1 = generateRandomRNA(read_length)
+            p2 = noise(shiftString(p1, 5), 0.02, 0.02)
 
-        if len(p2) > len(p1):
-            p2 = p2[:len(p1)] # cut p2
+            if len(p2) > len(p1):
+                p2 = p2[:len(p1)]  # cut p2
 
-        elif len(p1) > len(p2):
-            res = generateRandomRNA(len(p1) - len(p2))
-            p2 += res
-        writer.writerow([p1, p2])
-
+            elif len(p1) > len(p2):
+                res = generateRandomRNA(len(p1) - len(p2))
+                p2 += res
+            writer.writerow([p1, p2])
