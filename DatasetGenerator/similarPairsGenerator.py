@@ -78,7 +78,7 @@ def shiftString(read, shift_index_range):
 
 
 def generateSimilarPairs(filename, read_length, read_numbers):
-    with open('similarPairs500K.csv', 'w', newline='') as csvfile:
+    with open(filename, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(['Seq1', 'Seq2'])
