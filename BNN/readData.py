@@ -1,5 +1,7 @@
 import csv
 import numpy as np
+import random
+import tensorflow as tf
 
 
 def binarize_sequence(sequence):
@@ -27,13 +29,41 @@ def binarize_pair(sequence1, sequence2):
     return np.array(Matrix)
 
 
-mat = binarize_pair("ATGCGGCATTA", "ATGCGGCATTA")
-print(mat)
+def get_train_and_validation_tensors(filename, train_set_percentage):
+    X = []
+    Y = []
+    with open(filename, 'r') as f:
+        reader = csv.reader(f, delimiter=',')
+        pairs = list(reader)
+        pairs.pop(0)
+
+    for item in pairs:
+        pair = binarize_pair(item[0], item[1])
+        X.append(pair)
+        Y.append(int(item[2]))
+
+    X = np.array(X)
+    Y = np.array(Y)
+
+    train_set_size = int(train_set_percentage * len(X))
+
+    X_train = X[:train_set_size]
+    X_validation = X[train_set_size:]
+
+    Y_train = Y[:train_set_size]
+    Y_validation = Y[train_set_size:]
+
+    # input_layer = tf.reshape(X, [-1, 8, 400, 1])  # Width: 8, Height: 400
+    # input_layer = tf.cast(input_layer, tf.float16)
+    return X_train, Y_train, X_validation, Y_validation
+
+
+# input_layer = tf.reshape(X, [-1, 400, 8, 1])
+
+# print(X[0])
+# print(Y[0])
 
 """
-with open('../similar50K.csv', 'r') as f:
-    reader = csv.reader(f, delimiter=',')
-    my_list = list(reader)
     for i in range(1, len(my_list)):
-        X.append(my_list[i][0])
+        pair = binarize_pair(my_list[i][0], my_list[i][1]) 
 """

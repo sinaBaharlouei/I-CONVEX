@@ -4,8 +4,8 @@ import csv
 
 # generate exons
 # generate transcripts from exons
-number_of_reads = 50000
-number_of_clusters = 5000
+number_of_reads = 100
+number_of_clusters = 10
 number_of_exons = 400
 exome_length = 20
 number_of_exons_generating_transcript = 20
