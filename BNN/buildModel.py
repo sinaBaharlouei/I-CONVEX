@@ -16,8 +16,6 @@ def cnn_model_fn(features, labels, mode):
 
     print(conv1.shape)
 
-    mode = tf.estimator.ModeKeys.TRAIN
-
     pool2_flat = tf.reshape(conv1, [-1, 1 * 392 * 32])
 
     dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
