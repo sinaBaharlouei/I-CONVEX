@@ -70,20 +70,20 @@ def read_data_sets(filename,
     for item in pairs:
         pair = binarize_pair(item[0], item[1])
         X.append(pair)
-        Y.append(int(item[2]))
+        Y.append(2 * int(item[2]) - 1)
 
     all_pairs = np.array(X)
     all_labels = np.array(Y)
+    print("all_labels_shape:", all_labels.shape)
 
     """Set the pairs and labels."""
-    num_training = int(1 - (validation_percentage + test_percentage) * len(X))
+    num_training = int((1 - (validation_percentage + test_percentage)) * len(X))
     num_validation = int(validation_percentage * len(X))
     num_test = int(test_percentage * len(X))
 
     all_pairs = all_pairs.reshape(all_pairs.shape[0],
                                   all_pairs.shape[1], all_pairs.shape[2], 1)
-
-    all_labels = dense_to_one_hot(all_labels, len(all_labels))
+    #all_labels = dense_to_one_hot(all_labels, len(all_labels))
 
     mask = range(num_training)
     train_pairs = all_pairs[mask]
@@ -96,6 +96,7 @@ def read_data_sets(filename,
     mask = range(num_training + num_validation, num_training + num_validation + num_test)
     test_images = all_pairs[mask]
     test_labels = all_labels[mask]
+
 
     train = DataSet(train_pairs, train_labels)
     validation = DataSet(validation_pairs, validation_labels)
