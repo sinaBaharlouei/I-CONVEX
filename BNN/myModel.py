@@ -20,7 +20,7 @@ def deepnn(x1, x2):
       performs the following:
     """
 
-    W_conv1 = weight_variable([4, 8, 1, 32])
+    W_conv1 = weight_variable([4, 3, 1, 32])
     b_conv1 = bias_variable([32])
 
     h1_conv1 = tf.nn.relu(conv2d(read1, W_conv1) + b_conv1)
@@ -111,7 +111,7 @@ def bias_variable(shape):
     return tf.Variable(initial)
 
 
-data = readData.read_data_sets("../files/pairs_100.csv", 0.1, 0.1)
+data = readData.read_data_sets("../files/pair_dataset_20000.csv", 0.1, 0.1)
 # Create the model
 r1 = tf.placeholder(tf.float32, [100, 4, 400, 1])
 r2 = tf.placeholder(tf.float32, [100, 4, 400, 1])
@@ -134,7 +134,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     # training
-    for i in range(1000):
+    for i in range(20000):
         features, labels = data.train.next_batch(100)
 
         parts = np.split(features, 2, axis=1)
@@ -156,6 +156,7 @@ with tf.Session() as sess:
         parts = np.split(features, 2, axis=1)
         x1 = parts[0]
         x2 = parts[1]
+
         labels = np.reshape(labels, [100, 1])
 
         accuracy.eval(feed_dict={r1: x1, r2: x2, y_: labels})

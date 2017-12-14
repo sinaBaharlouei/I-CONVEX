@@ -73,6 +73,7 @@ def read_data_sets(filename,
         Y.append(2 * int(item[2]) - 1)
 
     all_pairs = np.array(X)
+    print("pairs shape:", all_pairs.shape)
     all_labels = np.array(Y)
     print("all_labels_shape:", all_labels.shape)
 
@@ -130,12 +131,13 @@ def binarize_sequence(sequence):
 
 
 def binarize_pair(sequence1, sequence2):
-    w, h = len(sequence1), 8
+    # w, h = 98, 8
+    w, h = 400, 8
 
     letter_dictionary = {'A': 0, 'T': 1, 'G': 2, 'C': 3}
 
     Matrix = [[0 for x in range(w)] for y in range(h)]
-    for i in range(len(sequence1)):
+    for i in range(w):
         Matrix[letter_dictionary[sequence1[i]]][i] = 1
         Matrix[letter_dictionary[sequence2[i]] + 4][i] = 1
 
