@@ -61,7 +61,7 @@ def deepnn(x):
         h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
         print(h_conv1.shape)
 
-    # Pooling layer - downsamples by 2X.
+    # Pooling layer - downsamples by 4X.
     with tf.name_scope('pool1'):
         h_pool1 = max_pool_1x4(h_conv1)
         print(h_pool1.shape)
@@ -77,7 +77,7 @@ def deepnn(x):
         print(h_pool2.shape)
 
     # Fully connected layer 1 -- after 2 round of downsampling, our 28x28 image
-    # is down to 7x7x64 feature maps -- maps this to 1024 features.
+    # is down to 4x50x64 feature maps -- maps this to 1024 features.
     with tf.name_scope('fc1'):
         W_fc1 = weight_variable([4 * 50 * 64, 1024])
         b_fc1 = bias_variable([1024])
@@ -115,6 +115,7 @@ def max_pool_1x4(x):
     """max_pool_1x24downsamples a feature map by 2X."""
     return tf.nn.max_pool(x, ksize=[1, 1, 4, 1],
                           strides=[1, 1, 4, 1], padding='SAME')
+
 
 def weight_variable(shape):
     """weight_variable generates a weight variable of a given shape."""
