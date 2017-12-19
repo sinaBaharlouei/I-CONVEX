@@ -3,7 +3,7 @@ import csv
 
 
 my_list = []
-with open('hashes2.csv', 'r') as f:
+with open('hash10.csv', 'r') as f:
     reader = csv.reader(f, delimiter=',')
     reads = list(reader)
     for item in reads:

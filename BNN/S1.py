@@ -79,8 +79,8 @@ def deepnn(x):
     # Fully connected layer 1 -- after 2 round of downsampling, our 28x28 image
     # is down to 4x50x64 feature maps -- maps this to 1024 features.
     with tf.name_scope('fc1'):
-        W_fc1 = weight_variable([4 * 50 * 64, 1024])
-        b_fc1 = bias_variable([1024])
+        W_fc1 = weight_variable([4 * 50 * 64, 50])
+        b_fc1 = bias_variable([50])
 
         h_pool2_flat = tf.reshape(h_pool2, [-1, 4 * 50 * 64])
         h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
@@ -93,7 +93,7 @@ def deepnn(x):
 
     # Map the 1024 features to 10 classes, one for each digit
     with tf.name_scope('fc2'):
-        W_fc2 = weight_variable([1024, 1])
+        W_fc2 = weight_variable([50, 1])
         b_fc2 = bias_variable([1])
 
         y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
@@ -158,7 +158,7 @@ with tf.Session() as sess:
         labels = np.reshape(labels, [100, 1])
 
         if i % 100 == 0:
-            train_accuracy = accuracy.eval(feed_dict={r1: features, y_: labels, keep_prob: 0.4})
+            train_accuracy = accuracy.eval(feed_dict={r1: features, y_: labels, keep_prob: 1})
             print('step %d, training accuracy %g' % (i, train_accuracy))
             # print(y_conv.eval(feed_dict={r1: x1, r2: x2, y_: labels}))
             # print(final_pred.eval(feed_dict={r1: features, y_: labels, keep_prob: 0.5}))

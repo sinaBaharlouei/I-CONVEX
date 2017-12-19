@@ -63,8 +63,8 @@ def deepnn(x1, x2):
         W_conv1 = weight_variable([4, 4, 1, 32])
         b_conv1 = bias_variable([32])
 
-        h1_conv1 = tf.nn.relu(conv2d(pair1, W_conv1) + b_conv1)
-        h2_conv1 = tf.nn.relu(conv2d(pair2, W_conv1) + b_conv1)
+        h1_conv1 = tf.nn.tanh(conv2d(pair1, W_conv1) + b_conv1)
+        h2_conv1 = tf.nn.tanh(conv2d(pair2, W_conv1) + b_conv1)
 
         print(h1_conv1.shape)
 
@@ -76,11 +76,11 @@ def deepnn(x1, x2):
 
     # Second convolutional layer -- maps 32 feature maps to 64.
     with tf.name_scope('conv2'):
-        W_conv2 = weight_variable([2, 5, 32, 32])
-        b_conv2 = bias_variable([32])
+        W_conv2 = weight_variable([2, 5, 32, 20])
+        b_conv2 = bias_variable([20])
 
-        h1_conv2 = tf.nn.relu(conv2d(h1_pool1, W_conv2) + b_conv2)
-        h2_conv2 = tf.nn.relu(conv2d(h2_pool1, W_conv2) + b_conv2)
+        h1_conv2 = tf.nn.tanh(conv2d(h1_pool1, W_conv2) + b_conv2)
+        h2_conv2 = tf.nn.tanh(conv2d(h2_pool1, W_conv2) + b_conv2)
 
     # Second pooling layer.
     with tf.name_scope('pool2'):
@@ -92,11 +92,11 @@ def deepnn(x1, x2):
     # Fully connected layer 1 -- after 2 round of downsampling, our 28x28 image
     # is down to 7x7x64 feature maps -- maps this to 1024 features.
     with tf.name_scope('fc1'):
-        W_fc1 = weight_variable([2 * 50 * 32, 50])
+        W_fc1 = weight_variable([2 * 50 * 20, 50])
         b2_fc1 = bias_variable([50])
 
-        h1_pool2_flat = tf.reshape(h1_pool2, [-1, 2 * 50 * 32])
-        h2_pool2_flat = tf.reshape(h2_pool2, [-1, 2 * 50 * 32])
+        h1_pool2_flat = tf.reshape(h1_pool2, [-1, 2 * 50 * 20])
+        h2_pool2_flat = tf.reshape(h2_pool2, [-1, 2 * 50 * 20])
 
         tanh_beta = tf.constant(1.0)
         tanh_beta2 = tf.constant(1.0)
@@ -173,9 +173,10 @@ y_ = tf.placeholder(tf.float32, [None, 1])
 # Build the graph for the deep net
 y_conv, hash1, hash2, reg1, reg2, finalReg1, finalReg2 = deepnn(r1, r2)
 
+
 # training
-# cross_entropy = tf.reduce_mean(tf.square(y_ - y_conv), keep_dims=True)
-cross_entropy = tf.reduce_mean(tf.add(tf.scalar_mul(500, tf.square(y_ - y_conv)), tf.add(finalReg1, finalReg2)), keep_dims=True)
+cross_entropy = tf.reduce_mean(tf.square(y_ - y_conv), keep_dims=True)
+# cross_entropy = tf.reduce_mean(tf.add(tf.scalar_mul(500, tf.square(y_ - y_conv)), tf.add(finalReg1, finalReg2)), keep_dims=True)
 
 train_step = tf.train.AdamOptimizer(0.0001).minimize(cross_entropy)
 
@@ -185,10 +186,12 @@ correct_prediction = tf.equal(final_pred, y_)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 saver = tf.train.Saver()
+
 with tf.Session() as sess:
+
     sess.run(tf.global_variables_initializer())
     # training
-    for i in range(20000):
+    for i in range(10000):
         features, labels = data.train.next_batch(100)
 
         parts = np.split(features, 2, axis=1)
@@ -206,11 +209,12 @@ with tf.Session() as sess:
 
         train_step.run(feed_dict={r1: feature1, r2: feature2, y_: labels})
 
+
     batch_size = 100
     batch_num = int(data.test.num_examples / batch_size)
     test_accuracy = 0
 
-    with open("hash10.csv", 'w', newline='') as csvfile:
+    with open("hashes2.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
@@ -243,4 +247,5 @@ with tf.Session() as sess:
 
     test_accuracy /= batch_num
     print("test accuracy %g" % test_accuracy)
-    saver.save(sess, "../model/regularized_model")
+
+    saver.save(sess, 'C:\Users\SinaBaharlouei\PycharmProjects\ClusteringReads\model')
