@@ -29,7 +29,6 @@ import argparse
 import sys
 import tempfile
 
-from tensorflow.examples.tutorials.mnist import input_data
 from BNN import readData
 import tensorflow as tf
 import numpy as np
@@ -76,7 +75,7 @@ def deepnn(x):
         h_pool2 = max_pool_2x2(h_conv2)
         print(h_pool2.shape)
 
-    # Fully connected layer 1 -- after 2 round of downsampling, our 28x28 image
+    # Fully connected layer 1 -- after 2 round of down sampling, our 28x28 image
     # is down to 4x50x64 feature maps -- maps this to 1024 features.
     with tf.name_scope('fc1'):
         W_fc1 = weight_variable([4 * 50 * 64, 50])
@@ -97,7 +96,7 @@ def deepnn(x):
         b_fc2 = bias_variable([1])
 
         y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-    return y_conv, keep_prob
+    return y_conv, keep_prob, W_conv1, b_conv1, W_conv2, b_conv2, W_fc1, b_fc1, W_fc2, b_fc2
 
 
 def conv2d(x, W):
@@ -106,7 +105,7 @@ def conv2d(x, W):
 
 
 def max_pool_2x2(x):
-    """max_pool_2x2 downsamples a feature map by 2X."""
+    """max_pool_2x2 down samples a feature map by 2X."""
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
                           strides=[1, 2, 2, 1], padding='SAME')
 
@@ -129,7 +128,7 @@ def bias_variable(shape):
     return tf.Variable(initial)
 
 
-data = readData.read_data_sets("../files/pair_dataset_20000.csv", 0.1, 0.1)
+data = readData.read_data_sets("../files/pair_dataset_1000.csv", 0.1, 0.1)
 # Create the model
 r1 = tf.placeholder(tf.float32, [None, 3200])
 
@@ -137,7 +136,7 @@ r1 = tf.placeholder(tf.float32, [None, 3200])
 y_ = tf.placeholder(tf.float32, [None, 1])
 
 # Build the graph for the deep net
-y_conv, keep_prob = deepnn(r1)
+y_conv, keep_prob, W1, b1, W2, b2, W3, b3, W4, b4 = deepnn(r1)
 
 # training
 cross_entropy = tf.reduce_mean(tf.square(y_ - y_conv), keep_dims=True)
@@ -148,10 +147,12 @@ final_pred = tf.cast(tf.sign(y_conv), tf.float32)
 correct_prediction = tf.equal(final_pred, y_)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+saver = tf.train.Saver()
+
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     # training
-    for i in range(20000):
+    for i in range(8000):
         features, labels = data.train.next_batch(100)
 
         features = np.reshape(features, [100, 3200])
@@ -164,7 +165,6 @@ with tf.Session() as sess:
             # print(final_pred.eval(feed_dict={r1: features, y_: labels, keep_prob: 0.5}))
 
         train_step.run(feed_dict={r1: features, y_: labels, keep_prob: 0.4})
-
     batch_size = 100
     batch_num = int(data.test.num_examples / batch_size)
     test_accuracy = 0
@@ -178,3 +178,7 @@ with tf.Session() as sess:
         # print(y_conv.eval(feed_dict={r1: x1, r2: x2, y_: labels}))
     test_accuracy /= batch_num
     print("test accuracy %g" % test_accuracy)
+
+
+    save_path = saver.save(sess, "../model/CNNModel.ckpt")
+    print("Model saved in file: %s" % save_path)
