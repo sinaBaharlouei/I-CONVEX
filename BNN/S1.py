@@ -147,12 +147,12 @@ final_pred = tf.cast(tf.sign(y_conv), tf.float32)
 correct_prediction = tf.equal(final_pred, y_)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-saver = tf.train.Saver()
+saver = tf.train.Saver({'W1': W1, 'W2': W2, 'W3': W3, 'W4': W4, 'b1': b1, 'b2': b2, 'b3': b3, 'b4': b4,})
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     # training
-    for i in range(8000):
+    for i in range(100):
         features, labels = data.train.next_batch(100)
 
         features = np.reshape(features, [100, 3200])
@@ -178,7 +178,6 @@ with tf.Session() as sess:
         # print(y_conv.eval(feed_dict={r1: x1, r2: x2, y_: labels}))
     test_accuracy /= batch_num
     print("test accuracy %g" % test_accuracy)
-
 
     save_path = saver.save(sess, "../model/CNNModel.ckpt")
     print("Model saved in file: %s" % save_path)
