@@ -130,7 +130,8 @@ def deepnn(x1, x2):
 
         non_linearity = tf.tanh(inner_product)
 
-        return non_linearity, h1_fc1, h2_fc1, h1_reg_square, h2_reg_square, final_reg1, final_reg2
+        # return non_linearity, h1_fc1, h2_fc1, h1_reg_square, h2_reg_square, final_reg1, final_reg2
+        return non_linearity, W_conv1, b_conv1, W_conv2, b_conv2, W_fc1, b2_fc1, final_reg1, final_reg2, h1_fc1, h2_fc1
 
 
 def conv2d(x, W):
@@ -171,7 +172,7 @@ r2 = tf.placeholder(tf.float32, [None, 1600])
 y_ = tf.placeholder(tf.float32, [None, 1])
 
 # Build the graph for the deep net
-y_conv, hash1, hash2, reg1, reg2, finalReg1, finalReg2 = deepnn(r1, r2)
+y_conv, W1, b1, W2, b2, W3, b3, finalReg1, finalReg2, hash1, hash2 = deepnn(r1, r2)
 
 # training
 # cross_entropy = tf.reduce_mean(tf.square(y_ - y_conv), keep_dims=True)
@@ -184,7 +185,8 @@ final_pred = tf.cast(tf.sign(y_conv), tf.float32)
 correct_prediction = tf.equal(final_pred, y_)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-saver = tf.train.Saver()
+saver = tf.train.Saver({'W1': W1, 'W2': W2, 'W3': W3, 'b1': b1, 'b2': b2, 'b3': b3})
+
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     # training
@@ -243,4 +245,4 @@ with tf.Session() as sess:
 
     test_accuracy /= batch_num
     print("test accuracy %g" % test_accuracy)
-    saver.save(sess, "../model/regularized_model")
+    saver.save(sess, "../model/regularized_hashnet.ckpt")
