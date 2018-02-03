@@ -128,7 +128,7 @@ def bias_variable(shape):
     return tf.Variable(initial)
 
 
-data = readData.read_data_sets("../files/pair_dataset_1000.csv", 0.1, 0.1)
+data = readData.read_data_sets("../files/pair_dataset_100000.csv", 0.1, 0.1)
 # Create the model
 r1 = tf.placeholder(tf.float32, [None, 3200])
 
@@ -147,12 +147,12 @@ final_pred = tf.cast(tf.sign(y_conv), tf.float32)
 correct_prediction = tf.equal(final_pred, y_)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-saver = tf.train.Saver({'W1': W1, 'W2': W2, 'W3': W3, 'W4': W4, 'b1': b1, 'b2': b2, 'b3': b3, 'b4': b4,})
+saver = tf.train.Saver({'W1': W1, 'W2': W2, 'W3': W3, 'W4': W4, 'b1': b1, 'b2': b2, 'b3': b3, 'b4': b4})
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     # training
-    for i in range(100):
+    for i in range(25000):
         features, labels = data.train.next_batch(100)
 
         features = np.reshape(features, [100, 3200])

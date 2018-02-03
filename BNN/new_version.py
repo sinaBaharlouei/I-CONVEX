@@ -38,7 +38,7 @@ import csv
 FLAGS = None
 
 
-def deepnn(x1, x2):
+def deepnn(x1, x2, W1_det):
     """deepnn builds the graph for a deep net for classifying digits.
   Args:
     x: an input tensor with the dimensions (N_examples, 784), where 784 is the
@@ -55,39 +55,32 @@ def deepnn(x1, x2):
     # Last dimension is for "features" - there is only one here, since images are
     # grayscale -- it would be 3 for an RGB image, 4 for RGBA, etc.
     with tf.name_scope('reshape'):
-        pair1 = tf.reshape(x1, [-1, 4, 400, 1])
-        pair2 = tf.reshape(x2, [-1, 4, 400, 1])
+        pair1 = tf.reshape(x1, [-1, 4, 100, 1])
+        pair2 = tf.reshape(x2, [-1, 4, 100, 1])
 
-    # First convolutional layer - maps one grayscale image to 32 feature maps.
-    with tf.name_scope('conv1'):
-        W_conv1 = weight_variable([4, 4, 1, 32])
-        b_conv1 = bias_variable([32])
-
-        h1_conv1 = tf.nn.relu(conv2d(pair1, W_conv1) + b_conv1)
-        h2_conv1 = tf.nn.relu(conv2d(pair2, W_conv1) + b_conv1)
-
-        print(h1_conv1.shape)
+    W_conv1 = tf.reshape(W1_det, [4, 3, 1, 64])
+    h1_conv1 = tf.nn.relu(conv2d_1(pair1, W_conv1) - 2)
+    h2_conv1 = tf.nn.relu(conv2d_1(pair2, W_conv1) - 2)
+    print(h1_conv1.shape)
 
     # Pooling layer - downsamples by 2X.
-    with tf.name_scope('pool1'):
-        h1_pool1 = max_pool_1x4(h1_conv1)
-        h2_pool1 = max_pool_1x4(h2_conv1)
-        print("h1_pool: ", h1_pool1.shape)
+    h1_pool1 = max_pool_1x5(h1_conv1)
+    h2_pool1 = max_pool_1x5(h2_conv1)
+
+    tanh_const = tf.constant(1.0)
 
     # Second convolutional layer -- maps 32 feature maps to 64.
-    with tf.name_scope('conv2'):
-        W_conv2 = weight_variable([1, 4, 32, 64])
-        b_conv2 = bias_variable([64])
-
-        h1_conv2 = tf.nn.relu(conv2d(h1_pool1, W_conv2) + b_conv2)
-        h2_conv2 = tf.nn.relu(conv2d(h2_pool1, W_conv2) + b_conv2)
+    W_conv2 = weight_variable([5, 1, 64, 32])
+    h1_conv2 = tf.nn.relu(tf.nn.tanh(tf.multiply(tanh_const, conv2d(h1_pool1, W_conv2))))
+    h2_conv2 = tf.nn.relu(tf.nn.tanh(tf.multiply(tanh_const, conv2d(h2_pool1, W_conv2))))
+    #  h1_conv2 = tf.nn.relu(tf.nn.tanh(tf.multiply(tanh_const,conv2d(h1_pool1, W_conv2) + b_conv2)))
+    #  h2_conv2 = tf.nn.relu(tf.nn.tanh(tf.multiply(tanh_const,conv2d(h2_pool1, W_conv2) + b_conv2)))
 
     # Second pooling layer.
-    with tf.name_scope('pool2'):
-        h1_pool2 = max_pool_2x2(h1_conv2)
-        h2_pool2 = max_pool_2x2(h2_conv2)
-
-        print("pool2:", h1_pool2.shape)
+    h1_pool2 = max_pool_2x1(h1_conv2)
+    h2_pool2 = max_pool_2x1(h2_conv2)
+    #  h1_pool2 = (h1_conv2)
+    #  h2_pool2 = (h2_conv2)
 
     # Third convolutional layer -- maps 64 feature maps to 64.
     with tf.name_scope('conv3'):
@@ -153,22 +146,39 @@ def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
 
-def max_pool_2x2(x):
-    """max_pool_2x2 downsamples a feature map by 2X."""
+def conv2d_1(x, W):
+    """conv2d returns a 2d convolution layer with full stride."""
+    return tf.nn.conv2d(x, W, strides=[1, 4, 1, 1], padding='SAME')
+
+
+def max_pool_2x1(x):
+    """max_pool_2x1 downsamples a feature map by 2X."""
+    return tf.nn.max_pool(x, ksize=[1, 2, 1, 1],
+                          strides=[1, 2, 1, 1], padding='SAME')
+
+
+def max_pool_1x4(x):
+    """max_pool_2x1 downsamples a feature map by 2X."""
     return tf.nn.max_pool(x, ksize=[1, 1, 4, 1],
                           strides=[1, 1, 4, 1], padding='SAME')
 
 
-def max_pool3(x):
-    """max_pool_3 downsamples a feature map by 2X."""
+def max_pool_1x5(x):
+    """max_pool_2x1 downsamples a feature map by 2X."""
     return tf.nn.max_pool(x, ksize=[1, 1, 5, 1],
                           strides=[1, 1, 5, 1], padding='SAME')
 
 
-def max_pool_1x4(x):
-    """max_pool_1x24downsamples a feature map by 2X."""
-    return tf.nn.max_pool(x, ksize=[1, 4, 4, 1],
-                          strides=[1, 4, 4, 1], padding='SAME')
+def max_pool_1x10(x):
+    """max_pool_2x1 downsamples a feature map by 2X."""
+    return tf.nn.max_pool(x, ksize=[1, 1, 10, 1],
+                          strides=[1, 1, 10, 1], padding='SAME')
+
+
+def max_pool_2x2(x):
+    """max_pool_2x2 downsamples a feature map by 2X."""
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
+                          strides=[1, 2, 2, 1], padding='SAME')
 
 
 def weight_variable(shape):
