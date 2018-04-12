@@ -50,6 +50,26 @@ def binarize_sequence(sequence):
     return np.array(Matrix)
 
 
+def binarize_sequence2(sequence):
+    w, h = len(sequence), 4
+
+    letter_dictionary = {'A': 0, 'T': 1, 'G': 2, 'C': 3}
+
+    Matrix = [[0 for x in range(400)] for y in range(h)]
+    if w >= 400:
+        for i in range(400):
+            Matrix[letter_dictionary[sequence[i]]][i] = 1
+
+    else:
+        for i in range(w):
+            Matrix[letter_dictionary[sequence[i]]][i] = 1
+
+        for i in range(w, 400):
+            # Add a to the rest
+            Matrix[0][i] = 1
+    return np.array(Matrix)
+
+
 def binarize_pair(sequence1, sequence2):
     # w, h = 98, 8
     w, h = 400, 8
@@ -67,6 +87,11 @@ def binarize_pair(sequence1, sequence2):
 def read_next_batch(similarity_graph, fasta_file, batch_size):
     reads_dict = read_fasta_file_as_dict(fasta_file)
 
+    # Converts to the right format
+    one_hot_encoded_dict = {}
+    for key in reads_dict:
+        one_hot_encoded_dict[key] = binarize_sequence2(reads_dict[key].seq)
+
     with open(similarity_graph, 'r') as csvfile:
         pairs = list(csv.reader(csvfile, delimiter=','))
 
@@ -75,27 +100,67 @@ def read_next_batch(similarity_graph, fasta_file, batch_size):
 
         for i in range(number_of_batches):
             current_batch = []
-            start = number_of_batches * i
+            start = batch_size * i
             end = start + batch_size
 
             for j in range(start, end):
                 current_pair = pairs[j]
+                seq1 = one_hot_encoded_dict[current_pair[0]]
+                seq2 = one_hot_encoded_dict[current_pair[1]]
+                current_batch.append(np.concatenate((seq1, seq2)))
+                """
                 seq1 = reads_dict[current_pair[0]].seq
                 seq2 = reads_dict[current_pair[1]].seq
-                binarized = binarize_pair(seq1, seq2)
-                current_batch.append(binarized)
-            yield np.array(current_batch)
+                if len(seq1) < 400:
+                    rest = ''
+                    for k in range(400 - len(seq1)):
+                        rest += 'A'
+                    seq1 += rest
 
+                if len(seq2) < 400:
+                    rest = ''
+                    for k in range(400 - len(seq2)):
+                        rest += 'A'
+                    seq2 += rest
+
+                seq1 = seq1[0:400]
+                seq2 = seq2[0:400]
+                binarized = binarize_pair(seq1, seq2)
+                """
+            yield np.array(current_batch), number_of_batches, batch_size
+            print(start, end)
 
         # Last batch
         current_batch = []
         start = number_of_batches * batch_size
         end = number_of_pairs
+        batch_size = end - start
 
         for j in range(start, end):
             current_pair = pairs[j]
+            seq1 = one_hot_encoded_dict[current_pair[0]]
+            seq2 = one_hot_encoded_dict[current_pair[1]]
+            current_batch.append(np.concatenate((seq1, seq2)))
+            """
             seq1 = reads_dict[current_pair[0]].seq
             seq2 = reads_dict[current_pair[1]].seq
+            if len(seq1) < 400:
+                rest = ''
+                for k in range(400 - len(seq1)):
+                    rest += 'A'
+                seq1 += rest
+
+            if len(seq2) < 400:
+                rest = ''
+                for k in range(400 - len(seq2)):
+                    rest += 'A'
+                seq2 += rest
+
+            seq1 = seq1[0:400]
+            seq2 = seq2[0:400]
+
             binarized = binarize_pair(seq1, seq2)
             current_batch.append(binarized)
-        yield np.array(current_batch)
+            """
+        yield np.array(current_batch), number_of_batches, batch_size
+

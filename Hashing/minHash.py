@@ -12,7 +12,7 @@ def LSH(signature_matrix, reads, b, r):
     pass
 
 
-def getMinHashFunctions(reads, k, r, b):
+def getMinHashFunctions(reads, k, r, b, number_of_permutations):
     """Return signature matrix
     reads: list of reads
     k: length of each one of k-mers
@@ -121,25 +121,34 @@ def getMinHashFunctions(reads, k, r, b):
 
     now3 = timeit.default_timer()
     print("LSH array is ready.", now3 - now2)
+    b = n // r
 
     # Create graph
     G = nx.Graph()
     for read_id in read_id_list:
         G.add_node(read_id)
 
+    """
     for key in band_dictionary:
         if len(band_dictionary[key]) > 1:
             for i in range(1, len(band_dictionary[key])):
                 for j in range(i):
                     G.add_edge(band_dictionary[key][j], band_dictionary[key][i])
+    FastaIO.write_graph_to_csv('WGraphK' + str(k) + 'R' + str(r) + 'B' + str(b) + '.csv', G)
+    """
+    for key in band_dictionary:
+        L = len(band_dictionary[key])
+        t = 1
+        while L > t and t < number_of_permutations:
+            for i in range(L-t):
+                G.add_edge(band_dictionary[key][i], band_dictionary[key][i+t])
+            t += 1
+    FastaIO.write_graph_to_csv('MinGraphK' + str(k) + 'R' + str(r) + 'B' + str(b) + 'P' + str(number_of_permutations) + '.csv', G)
 
     now4 = timeit.default_timer()
     print("Graph is created.", now4 - now3)
 
     print(len(G.edges()))
-
-    b = n // r
-    FastaIO.write_graph_to_csv('wholeGraphK' + str(k) + 'R' + str(r) + 'B' + str(b) + '.csv', G)
 
     return LSH_dict
 
@@ -189,9 +198,9 @@ def createHashFunctions(n, p):
     return list(hash_function_pairs)
 
 
-dataset = FastaIO.read_fasta_file('../files/reads50.fasta')
+dataset = FastaIO.read_fasta_file('../files/reads400.fasta')
 
-getMinHashFunctions(dataset, 9, 3, 8)
+getMinHashFunctions(dataset, 15, 1, 10, 10)
 
 """
 k = 8
