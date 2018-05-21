@@ -163,7 +163,7 @@ def bias_variable(shape):
     return tf.Variable(initial)
 
 
-data = readData.read_data_sets("../files/pair_dataset_20000.csv", 0.1, 0.1)
+data = readData.read_data_sets("../files/pair_dataset_100000.csv", 0.1, 0.1)
 # Create the model
 r1 = tf.placeholder(tf.float32, [None, 1600])
 r2 = tf.placeholder(tf.float32, [None, 1600])

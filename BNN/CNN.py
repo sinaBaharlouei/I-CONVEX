@@ -91,7 +91,8 @@ class DataSet(object):
         return self._epochs_completed
 
     def next_batch(self, batch_size, fake_data=False, shuffle=False):
-
+        if batch_size == -1:
+            batch_size = self._num_examples
         start = self._index_in_epoch
         # Shuffle for the first epoch
         if self._epochs_completed == 0 and start == 0 and shuffle:

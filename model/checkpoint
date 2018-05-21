@@ -1,2 +1,2 @@
-model_checkpoint_path: "CNNModel.ckpt"
-all_model_checkpoint_paths: "CNNModel.ckpt"
+model_checkpoint_path: "regularized_hashnet.ckpt"
+all_model_checkpoint_paths: "regularized_hashnet.ckpt"

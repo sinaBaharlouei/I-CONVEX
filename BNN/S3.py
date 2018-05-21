@@ -63,8 +63,8 @@ def deepnn(x1, x2):
         W_conv1 = weight_variable([4, 4, 1, 32])
         b_conv1 = bias_variable([32])
 
-        h1_conv1 = tf.nn.tanh(conv2d(pair1, W_conv1) + b_conv1)
-        h2_conv1 = tf.nn.tanh(conv2d(pair2, W_conv1) + b_conv1)
+        h1_conv1 = tf.nn.relu(conv2d(pair1, W_conv1) + b_conv1)
+        h2_conv1 = tf.nn.relu(conv2d(pair2, W_conv1) + b_conv1)
 
         print(h1_conv1.shape)
 
@@ -72,31 +72,46 @@ def deepnn(x1, x2):
     with tf.name_scope('pool1'):
         h1_pool1 = max_pool_1x4(h1_conv1)
         h2_pool1 = max_pool_1x4(h2_conv1)
-        print(h1_pool1.shape)
+        print("h1_pool: ", h1_pool1.shape)
 
     # Second convolutional layer -- maps 32 feature maps to 64.
     with tf.name_scope('conv2'):
-        W_conv2 = weight_variable([2, 5, 32, 20])
-        b_conv2 = bias_variable([20])
+        W_conv2 = weight_variable([1, 4, 32, 64])
+        b_conv2 = bias_variable([64])
 
-        h1_conv2 = tf.nn.tanh(conv2d(h1_pool1, W_conv2) + b_conv2)
-        h2_conv2 = tf.nn.tanh(conv2d(h2_pool1, W_conv2) + b_conv2)
+        h1_conv2 = tf.nn.relu(conv2d(h1_pool1, W_conv2) + b_conv2)
+        h2_conv2 = tf.nn.relu(conv2d(h2_pool1, W_conv2) + b_conv2)
 
     # Second pooling layer.
     with tf.name_scope('pool2'):
         h1_pool2 = max_pool_2x2(h1_conv2)
         h2_pool2 = max_pool_2x2(h2_conv2)
 
-        print(h1_pool2.shape)
+        print("pool2:", h1_pool2.shape)
+
+    # Third convolutional layer -- maps 64 feature maps to 64.
+    with tf.name_scope('conv3'):
+        W_conv3 = weight_variable([1, 5, 64, 64])
+        b_conv3 = bias_variable([64])
+
+        h1_conv3 = tf.nn.relu(conv2d(h1_pool2, W_conv3) + b_conv3)
+        h2_conv3 = tf.nn.relu(conv2d(h2_pool2, W_conv3) + b_conv3)
+
+    # Second pooling layer.
+    with tf.name_scope('pool3'):
+        h1_pool3 = max_pool3(h1_conv3)
+        h2_pool3 = max_pool3(h2_conv3)
+
+        print("pool3:", h1_pool3.shape)
 
     # Fully connected layer 1 -- after 2 round of downsampling, our 28x28 image
     # is down to 7x7x64 feature maps -- maps this to 1024 features.
     with tf.name_scope('fc1'):
-        W_fc1 = weight_variable([2 * 50 * 20, 50])
+        W_fc1 = weight_variable([1 * 5 * 64, 50])
         b2_fc1 = bias_variable([50])
 
-        h1_pool2_flat = tf.reshape(h1_pool2, [-1, 2 * 50 * 20])
-        h2_pool2_flat = tf.reshape(h2_pool2, [-1, 2 * 50 * 20])
+        h1_pool2_flat = tf.reshape(h1_pool3, [-1, 1 * 5 * 64])
+        h2_pool2_flat = tf.reshape(h2_pool3, [-1, 1 * 5 * 64])
 
         tanh_beta = tf.constant(1.0)
         tanh_beta2 = tf.constant(1.0)
@@ -140,14 +155,20 @@ def conv2d(x, W):
 
 def max_pool_2x2(x):
     """max_pool_2x2 downsamples a feature map by 2X."""
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                          strides=[1, 2, 2, 1], padding='SAME')
+    return tf.nn.max_pool(x, ksize=[1, 1, 4, 1],
+                          strides=[1, 1, 4, 1], padding='SAME')
+
+
+def max_pool3(x):
+    """max_pool_3 downsamples a feature map by 2X."""
+    return tf.nn.max_pool(x, ksize=[1, 1, 5, 1],
+                          strides=[1, 1, 5, 1], padding='SAME')
 
 
 def max_pool_1x4(x):
     """max_pool_1x24downsamples a feature map by 2X."""
-    return tf.nn.max_pool(x, ksize=[1, 1, 4, 1],
-                          strides=[1, 1, 4, 1], padding='SAME')
+    return tf.nn.max_pool(x, ksize=[1, 4, 4, 1],
+                          strides=[1, 4, 4, 1], padding='SAME')
 
 
 def weight_variable(shape):
@@ -173,7 +194,6 @@ y_ = tf.placeholder(tf.float32, [None, 1])
 # Build the graph for the deep net
 y_conv, hash1, hash2, reg1, reg2, finalReg1, finalReg2 = deepnn(r1, r2)
 
-
 # training
 cross_entropy = tf.reduce_mean(tf.square(y_ - y_conv), keep_dims=True)
 # cross_entropy = tf.reduce_mean(tf.add(tf.scalar_mul(500, tf.square(y_ - y_conv)), tf.add(finalReg1, finalReg2)), keep_dims=True)
@@ -188,7 +208,6 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 saver = tf.train.Saver()
 
 with tf.Session() as sess:
-
     sess.run(tf.global_variables_initializer())
     # training
     for i in range(10000):
@@ -208,7 +227,6 @@ with tf.Session() as sess:
             # print(final_pred.eval(feed_dict={r1: feature1, r2: feature2, y_: labels}))
 
         train_step.run(feed_dict={r1: feature1, r2: feature2, y_: labels})
-
 
     batch_size = 100
     batch_num = int(data.test.num_examples / batch_size)
@@ -242,10 +260,10 @@ with tf.Session() as sess:
                 for element in item:
                     writer.writerow([element])
 
-                # print(list(hash2.eval(feed_dict={r1: feature1, r2: feature2, y_: labels}))[0])
-        # print(list(reg1.eval(feed_dict={r1: feature1, r2: feature2, y_: labels}))[0])
+                    # print(list(hash2.eval(feed_dict={r1: feature1, r2: feature2, y_: labels}))[0])
+                    # print(list(reg1.eval(feed_dict={r1: feature1, r2: feature2, y_: labels}))[0])
 
     test_accuracy /= batch_num
     print("test accuracy %g" % test_accuracy)
 
-    saver.save(sess, 'C:\Users\SinaBaharlouei\PycharmProjects\ClusteringReads\model')
+    saver.save(sess, '../model/s3.ckpt')

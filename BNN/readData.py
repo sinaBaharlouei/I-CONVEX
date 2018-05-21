@@ -1,4 +1,5 @@
 import csv
+from DataOperations import FastaIO
 import numpy as np
 import collections
 
@@ -56,6 +57,48 @@ class DataSet(object):
         return self._pairs[start:end], self._labels[start:end]
 
 
+def read_similarity_graph(similarity_graph_file, fasta_file):
+    my_dict = FastaIO.read_fasta_file_as_dict(fasta_file)
+
+    with open(similarity_graph_file, 'r') as csvfile:
+        reader = list(csv.reader(csvfile, delimiter=','))
+
+        X = []
+        Y = []
+        for candidate_pair in reader:
+            read1 = my_dict[candidate_pair[0]].seq
+            read2 = my_dict[candidate_pair[1]].seq
+
+            if len(read1) < 400:
+                rest = ''
+                for i in range(400 - len(read1)):
+                    rest += 'A'
+                read1 += rest
+
+            if len(read2) < 400:
+                rest = ''
+                for i in range(400 - len(read2)):
+                    rest += 'A'
+                read2 += rest
+
+            read1 = read1[0:400]
+            read2 = read2[0:400]
+            pair = binarize_pair(read1, read2)
+            X.append(pair)
+            Y.append(1)
+
+        all_pairs = np.array(X)
+        all_labels = np.array(Y)
+
+        all_pairs = all_pairs.reshape(all_pairs.shape[0],
+                                      all_pairs.shape[1], all_pairs.shape[2], 1)
+
+        test = DataSet(all_pairs, all_labels)
+        ds = collections.namedtuple('Datasets', ['test'])
+
+        return ds(test=test)
+
+
 def read_data_sets(filename,
                    validation_percentage,
                    test_percentage,
@@ -84,7 +127,7 @@ def read_data_sets(filename,
 
     all_pairs = all_pairs.reshape(all_pairs.shape[0],
                                   all_pairs.shape[1], all_pairs.shape[2], 1)
-    #all_labels = dense_to_one_hot(all_labels, len(all_labels))
+    # all_labels = dense_to_one_hot(all_labels, len(all_labels))
 
     mask = range(num_training)
     train_pairs = all_pairs[mask]
@@ -97,7 +140,6 @@ def read_data_sets(filename,
     mask = range(num_training + num_validation, num_training + num_validation + num_test)
     test_images = all_pairs[mask]
     test_labels = all_labels[mask]
-
 
     train = DataSet(train_pairs, train_labels)
     validation = DataSet(validation_pairs, validation_labels)
@@ -123,9 +165,9 @@ def binarize_sequence(sequence):
 
     letter_dictionary = {'A': 0, 'T': 1, 'G': 2, 'C': 3}
 
-    Matrix = [[0 for x in range(w)] for y in range(h)]
+    Matrix = [[np.float16(0) for x in range(w)] for y in range(h)]
     for i in range(len(sequence)):
-        Matrix[letter_dictionary[sequence[i]]][i] = 1
+        Matrix[letter_dictionary[sequence[i]]][i] = np.float16(1)
 
     return np.array(Matrix)
 
@@ -136,11 +178,11 @@ def binarize_pair(sequence1, sequence2):
 
     letter_dictionary = {'A': 0, 'T': 1, 'G': 2, 'C': 3}
 
-    Matrix = [[0 for x in range(w)] for y in range(h)]
+    Matrix = np.zeros(shape=(h, w))
     for i in range(w):
         Matrix[letter_dictionary[sequence1[i]]][i] = 1
         Matrix[letter_dictionary[sequence2[i]] + 4][i] = 1
 
-    return np.array(Matrix)
+    return Matrix
 
 # input_layer = tf.reshape(X, [-1, 400, 8, 1])
