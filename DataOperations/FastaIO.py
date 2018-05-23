@@ -164,3 +164,33 @@ def read_next_batch(similarity_graph, fasta_file, batch_size):
             """
         yield np.array(current_batch), number_of_batches, batch_size
 
+
+def split_file(filename, number_of_chunks):
+    fasta_file = read_fasta_file(filename)
+    number_of_reads = len(fasta_file)
+
+    batch_size = number_of_reads // number_of_chunks
+
+    for i in range(number_of_chunks - 1):
+        start = i * batch_size
+        end = start + batch_size
+
+        sequences = []
+        for j in range(start, end):
+            sequences.append(fasta_file[j])
+
+        SeqIO.write(sequences, "chunk" + str(i+1) + ".fasta", "fasta")
+
+    # last file
+    start = (number_of_chunks - 1) * batch_size
+    end = number_of_reads
+    sequences = []
+    for j in range(start, end):
+        sequences.append(fasta_file[j])
+
+    SeqIO.write(sequences, "chunk" + str(number_of_chunks) + ".fasta", "fasta")
+
+
+# split_file('../files/reads50.fasta', 10)
+# x = read_fasta_file('chunk10.fasta')
+# print(len(x))
