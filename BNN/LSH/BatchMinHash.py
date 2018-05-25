@@ -1,8 +1,8 @@
 import csv
 import timeit
 import sys
-from DataOperations.KGrams import find_k_grams
-from DataOperations import FastaIO
+from ClusteringReads.DataOperations.KGrams import find_k_grams
+from ClusteringReads.DataOperations import FastaIO
 
 
 def getMinHashFunctions(reads, k, r, b):
@@ -125,7 +125,7 @@ if number_of_parameters > 1:
 else:
     print("File name is not assigned.")
     file_index = 1
-    filename = "chunk" + str(file_index) + ".fasta"
+    filename = "../DataOperations/chunk" + str(file_index) + ".fasta"
 
 hash_functions = []
 with open('hash_functions.csv', 'r') as csvfile:
