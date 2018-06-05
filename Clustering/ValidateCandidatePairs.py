@@ -49,14 +49,17 @@ with tf.Session() as sess:
     print("Model restored.")
     # Check the values of the variables
 
-    data_generator = FastaIO.read_next_batch('MinGraphK15R1B10P10.csv', 'reads1M.fasta', 5000)
+    t1 = timeit.default_timer()
+    data_generator = FastaIO.read_next_batch('MG1MK15R1B10P10.csv', 'reads1M.fasta', 5000)
 
     label_array = []
 
     features, batch_num, batch_size = next(data_generator)
     print(features.shape)
+    first = last = 0
     for i in range(batch_num+1):
-        first = timeit.default_timer()
+        if i % 10 == 0:
+            first = timeit.default_timer()
 
         r1 = tf.placeholder(tf.float32, [None, 3200])
 
@@ -90,10 +93,14 @@ with tf.Session() as sess:
         # correct_prediction = tf.equal(final_pred, labels)
         # accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         features, batch_num, batch_size = next(data_generator)
-        last = timeit.default_timer()
-        print(last - first)
+        if i % 10 == 9:
+            last = timeit.default_timer()
+            print(last - first)
 
-    with open("MHNET10_1M.csv", 'w', newline='') as f:  # Just use 'w' mode in 3.x
+    with open("Net.csv", 'w', newline='') as f:  # Just use 'w' mode in 3.x
         w = csv.writer(f, delimiter=',')
         for item in label_array:
             w.writerow([item])
+
+    t2 = timeit.default_timer()
+    print(t2 - t1)

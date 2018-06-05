@@ -1,11 +1,26 @@
 import csv
 import timeit
 import sys
-from DataOperations.KGrams import find_k_grams
-from DataOperations import FastaIO
+from Bio import SeqIO
+
+
+def read_fasta_file(fileName):
+    return list(SeqIO.parse(fileName, 'fasta'))
+
+
+def find_k_grams(record, k):
+    k_gram_array = []
+    length = len(record)
+    for i in range(length - k):
+        k_gram_array.append(hash(str(record[i:i + k])) & 0xffffffff)
+        # k_gram_array.append(string2numeric_hash(str(record[i:i + k])))
+
+    # print(k_gram_array)
+    return k_gram_array
 
 
 def getMinHashFunctions(reads, k, r, b):
+    print(k)
     """Return signature matrix
     reads: list of reads
     k: length of each one of k-mers
@@ -65,8 +80,8 @@ def getMinHashFunctions(reads, k, r, b):
         # for each hash function we compute h_i(s) for all strings
         for key in k_gram_dictionary:  # each string
             minHash = 9999999999
-            for item in k_gram_dictionary[key]:  # each shingle in string
-                current_number_hash_value = (a * item + b) % p
+            for val in k_gram_dictionary[key]:  # each shingle in string
+                current_number_hash_value = (a * val + b) % p
                 if current_number_hash_value < minHash:
                     minHash = current_number_hash_value
 
@@ -110,8 +125,8 @@ def getMinHashFunctions(reads, k, r, b):
 def bandHashFunction(integer_list):
     hash_value = 0
     index = 1
-    for item in integer_list:
-        hash_value += (index * index) * (item + 1) * (item + 2) + (item + 3)
+    for val in integer_list:
+        hash_value += (index * index) * (val + 1) * (val + 2) + (val + 3)
         index += 1
     return hash_value
 
@@ -120,7 +135,8 @@ number_of_parameters = len(sys.argv)
 
 if number_of_parameters > 1:
     file_index = sys.argv[1]
-    filename = "../DataOperations/chunk" + str(file_index) + ".fasta"
+    filename = "chunk" + str(file_index) + ".fasta"
+    print(filename)
 
 else:
     print("File name is not assigned.")
@@ -132,18 +148,16 @@ with open('hash_functions.csv', 'r') as csvfile:
     pairs = list(csv.reader(csvfile, delimiter=','))
     rows = int(pairs[0][0])
     bands = int(pairs[0][1])
+    k_parameter = int(pairs[0][2])
     pairs.pop(0)
-
     for pair in pairs:
         hash_functions.append([int(pair[0]), int(pair[1])])
 
-    dataset = FastaIO.read_fasta_file(filename)
+    dataset = read_fasta_file(filename)
 
-    final_lsh_dict = getMinHashFunctions(dataset, 15, rows, bands)
-    # LSH_file =
-    with open('LSH_' + str(file_index) + '.csv', 'w') as f:  # Just use 'w' mode in 3.x
+    final_lsh_dict = getMinHashFunctions(dataset, k_parameter, rows, bands)
+    with open('LSH_' + str(file_index) + '.csv', 'wb') as f:  # Just use 'w' mode in 3.x
         w = csv.writer(f, delimiter=',')
-
-        for key in final_lsh_dict:
-            row = [key] + final_lsh_dict[key]
+        for item in final_lsh_dict:
+            row = [item] + final_lsh_dict[item]
             w.writerow(row)

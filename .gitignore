@@ -3,4 +3,5 @@ files/
 TensorFlowExamples/
 test.py
 DatasetGenerator/*.csv
+Clustering/*.csv
 DatasetGenerator/.~lock.similarPairs500K.csv#

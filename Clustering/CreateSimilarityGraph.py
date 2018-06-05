@@ -11,23 +11,21 @@ with open('hash_functions.csv', 'r') as csvfile:
     pairs = list(csv.reader(csvfile, delimiter=','))
     r = int(pairs[0][0])
     b = int(pairs[0][1])
-    number_of_chunks = int(pairs[0][2])
-
+    k_parameter = int(pairs[0][2])
+    number_of_chunks = int(pairs[0][3])
+    print(number_of_chunks)
 
 t0 = timeit.default_timer()
 for i in range(number_of_chunks):
     with open('LSH_' + str(i+1) + '.csv') as csvfile:
         rows = list(csv.reader(csvfile, delimiter=','))
         print(rows[2][0])
-        j = 0
         for row in rows:
-            if j % 2 == 0:
-                row_len = len(row)
-                LSH_dict[row[0]] = []
-                for k in range(b):
-                    bands_dict[(k+1, row[k+1])] = []  # keys: (column, value)
-                    LSH_dict[row[0]].append(row[k+1])
-            j += 1
+            row_len = len(row)
+            LSH_dict[row[0]] = []
+            for k in range(b):
+                bands_dict[(k+1, row[k+1])] = []  # keys: (column, value)
+                LSH_dict[row[0]].append(row[k+1])
 
 t1 = timeit.default_timer()
 print(t1-t0)
@@ -53,9 +51,7 @@ for key in bands_dict:
 
 t2 = timeit.default_timer()
 print(t2 - t1)
-print(bands_dict)
-exit(0)
-FastaIO.write_graph_to_csv('MinGraphK' + str(15) + 'R' + str(r) + 'B' + str(b) + 'P' + str(number_of_permutations) + '.csv', G)
+FastaIO.write_graph_to_csv('MG1MK' + str(k_parameter) + 'R' + str(r) + 'B' + str(b) + 'P' + str(number_of_permutations) + '.csv', G)
 t3 = timeit.default_timer()
 print(t3 - t2)
 
