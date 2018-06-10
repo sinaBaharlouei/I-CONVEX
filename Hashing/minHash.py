@@ -8,10 +8,6 @@ import timeit
 import matplotlib.pyplot as plt
 
 
-def LSH(signature_matrix, reads, b, r):
-    pass
-
-
 def getMinHashFunctions(reads, k, r, b, number_of_permutations):
     """Return signature matrix
     reads: list of reads
