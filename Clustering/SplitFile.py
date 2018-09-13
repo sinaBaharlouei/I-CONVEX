@@ -30,7 +30,10 @@ def split_file(filename, chunk_numbers):
     number_of_reads = len(fasta_file)
 
     if chunk_numbers <= 0:
-        chunk_numbers = number_of_reads // 100000
+        if number_of_reads % 100000 == 0:
+            chunk_numbers = number_of_reads // 100000
+        else:
+            chunk_numbers = number_of_reads // 100000 + 1
 
     batch_size = number_of_reads // chunk_numbers
 
@@ -61,13 +64,11 @@ number_of_parameters = len(sys.argv)
 if number_of_parameters > 1:
     number_of_chunks = int(sys.argv[1])
 
-number_of_chunks = split_file('reads1M.fasta', number_of_chunks)
 
 if number_of_parameters > 4:
     r = int(sys.argv[2])
     b = int(sys.argv[3])
     k = int(sys.argv[4])
-
 else:
     r = 1
     b = 10
@@ -82,3 +83,54 @@ with open('hash_functions.csv', 'wb') as f:
     w.writerow([r, b, k, number_of_chunks])
     for item in hash_functions:
         w.writerow([item[0], item[1]])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+number_of_chunks = split_file('reads.fasta', number_of_chunks)
+
+
+
+
+
+
+
+
+
+
+
+
+

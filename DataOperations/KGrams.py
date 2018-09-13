@@ -10,8 +10,8 @@ def find_k_grams(record, k):
     k_gram_array = []
     length = len(record)
     for i in range(length - k):
-        # k_gram_array.append(hash(str(record[i:i + k])) & 0xffffffff)
-        k_gram_array.append(string2numeric_hash(str(record[i:i + k])))
+        k_gram_array.append(hash(str(record[i:i + k])) & 0xffffffff)
+        # k_gram_array.append(string2numeric_hash(str(record[i:i + k])))
 
     # print(k_gram_array)
     return k_gram_array

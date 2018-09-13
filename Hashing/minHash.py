@@ -7,9 +7,7 @@ import networkx as nx
 import timeit
 import matplotlib.pyplot as plt
 
-
-def LSH(signature_matrix, reads, b, r):
-    pass
+graph_mode = 2  # 1 for whole graph, 2 for partial minimal
 
 
 def getMinHashFunctions(reads, k, r, b, number_of_permutations):
@@ -100,7 +98,7 @@ def getMinHashFunctions(reads, k, r, b, number_of_permutations):
 
     for read_id in read_id_list:
 
-        integer_list = []  # it should have m elements
+        integer_list = []  # it should have b elements
         hash_function_counter = 0
         band_counter = 0
 
@@ -128,22 +126,25 @@ def getMinHashFunctions(reads, k, r, b, number_of_permutations):
     for read_id in read_id_list:
         G.add_node(read_id)
 
-    """
-    for key in band_dictionary:
-        if len(band_dictionary[key]) > 1:
-            for i in range(1, len(band_dictionary[key])):
-                for j in range(i):
-                    G.add_edge(band_dictionary[key][j], band_dictionary[key][i])
-    FastaIO.write_graph_to_csv('WGraphK' + str(k) + 'R' + str(r) + 'B' + str(b) + '.csv', G)
-    """
-    for key in band_dictionary:
-        L = len(band_dictionary[key])
-        t = 1
-        while L > t and t < number_of_permutations:
-            for i in range(L-t):
-                G.add_edge(band_dictionary[key][i], band_dictionary[key][i+t])
-            t += 1
-    FastaIO.write_graph_to_csv('MinGraphK' + str(k) + 'R' + str(r) + 'B' + str(b) + 'P' + str(number_of_permutations) + '.csv', G)
+    if graph_mode == 1:
+        for key in band_dictionary:
+            if len(band_dictionary[key]) > 1:
+                for i in range(1, len(band_dictionary[key])):
+                    for j in range(i):
+                        G.add_edge(band_dictionary[key][j], band_dictionary[key][i])
+        FastaIO.write_graph_to_csv('WGraphK' + str(k) + 'R' + str(r) + 'B' + str(b) + '.csv', G)
+
+    else:
+        for key in band_dictionary:
+            L = len(band_dictionary[key])
+            t = 1
+
+            while L > t and t < number_of_permutations:
+                for i in range(L - t):
+                    G.add_edge(band_dictionary[key][i], band_dictionary[key][i + t])
+                t += 1
+        FastaIO.write_graph_to_csv(
+            'MGK' + str(k) + 'R' + str(r) + 'B' + str(b) + 'P' + str(number_of_permutations) + '.csv', G)
 
     now4 = timeit.default_timer()
     print("Graph is created.", now4 - now3)
@@ -198,9 +199,14 @@ def createHashFunctions(n, p):
     return list(hash_function_pairs)
 
 
-dataset = FastaIO.read_fasta_file('../files/reads400.fasta')
+t1 = timeit.default_timer()
+
+dataset = FastaIO.read_fasta_file('../files/isoseq_flnc1.fasta')
 
 getMinHashFunctions(dataset, 15, 1, 10, 10)
+t2 = timeit.default_timer()
+
+print(t2 - t1)
 
 """
 k = 8
