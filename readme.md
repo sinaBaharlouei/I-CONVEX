@@ -22,5 +22,12 @@ generateDataset.py
 pairsGenerator.py
 
 ## API Reference
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
-
+1) Fasta file trimming: python FastaPreparation.py
+2) Split Fasta file into the chunks: python SplitFile.py
+3) Obtain MinHash signatures: python MPMH.py
+4) Find similar candidate pairs: python MultiProcessLSH.py
+5) Collect all the candidate pairs from different processes: ./collector.sh
+6) Validate Candidate Pairs: python ValidateCandidatePairs.py
+7) Cluster the polished graph: python Clustering.py
+8) Merge small clusters: python MergeClusters.py
+9) Create cluster directories as the input of CONVEX: python CreateClusterDirectories.py
