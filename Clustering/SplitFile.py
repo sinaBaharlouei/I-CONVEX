@@ -1,5 +1,4 @@
 from Bio import SeqIO
-# from DataOperations.FastaIO import read_fasta_file
 import random
 import sys
 import csv
@@ -28,12 +27,12 @@ def createHashFunctions(n, p):
 def split_file(filename, chunk_numbers):
     fasta_file = read_fasta_file(filename)
     number_of_reads = len(fasta_file)
-
+    print(number_of_reads)
     if chunk_numbers <= 0:
-        if number_of_reads % 100000 == 0:
-            chunk_numbers = number_of_reads // 100000
+        if number_of_reads % 50000 == 0:
+            chunk_numbers = number_of_reads // 50000
         else:
-            chunk_numbers = number_of_reads // 100000 + 1
+            chunk_numbers = number_of_reads // 50000 + 1
 
     batch_size = number_of_reads // chunk_numbers
 
@@ -62,7 +61,7 @@ number_of_chunks = -1
 number_of_parameters = len(sys.argv)
 
 if number_of_parameters > 1:
-    number_of_chunks = int(sys.argv[1])
+    number_of_chunks = sys.argv[1]
 
 
 if number_of_parameters > 4:
@@ -78,59 +77,10 @@ print("r = ", r)
 print("b = ", b)
 print("k = ", k)
 hash_functions = createHashFunctions(r * b, 1000)
+number_of_chunks = split_file('reads.fasta', number_of_chunks)
+
 with open('hash_functions.csv', 'wb') as f:
     w = csv.writer(f, delimiter=',')
     w.writerow([r, b, k, number_of_chunks])
     for item in hash_functions:
         w.writerow([item[0], item[1]])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-number_of_chunks = split_file('reads.fasta', number_of_chunks)
-
-
-
-
-
-
-
-
-
-
-
-
-

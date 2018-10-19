@@ -1,6 +1,5 @@
 import csv
 import tensorflow as tf
-from BNN import readData
 import numpy as np
 import timeit
 from DataOperations import FastaIO
@@ -50,11 +49,16 @@ with tf.Session() as sess:
     # Check the values of the variables
 
     t1 = timeit.default_timer()
-    data_generator = FastaIO.read_next_batch('MG1MK15R1B10P10.csv', 'reads1M.fasta', 5000)
+    data_generator = FastaIO.read_next_batch2('G.csv', 'trimmed.fasta', 5000)
+
+    # data_generator = FastaIO.read_next_batch('G8.csv', 'unbalanced2M.fasta', 5000)
 
     label_array = []
 
     features, batch_num, batch_size = next(data_generator)
+    t_end = timeit.default_timer()
+    print("One hot encode time: ", t_end - t1)
+
     print(features.shape)
     first = last = 0
     for i in range(batch_num+1):
@@ -93,6 +97,7 @@ with tf.Session() as sess:
         # correct_prediction = tf.equal(final_pred, labels)
         # accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         features, batch_num, batch_size = next(data_generator)
+
         if i % 10 == 9:
             last = timeit.default_timer()
             print(last - first)

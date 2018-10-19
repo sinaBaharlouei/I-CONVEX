@@ -1,23 +1,26 @@
 import os
 import csv
-from DataOperations import FastaIO
 from Bio import SeqIO
+
+
+def read_fasta_file_as_dict(fileName):
+    return SeqIO.to_dict(SeqIO.parse(fileName, 'fasta'))
+
 
 if not os.path.exists('Clusters'):
     os.makedirs('Clusters')
 
 
-fasta_dict = FastaIO.read_fasta_file_as_dict("reads1M.fasta")
+fasta_dict = read_fasta_file_as_dict("reads.fasta")
 
 cluster_dictionary = {}
-with open('finalClusters.csv', 'r') as csvfile:
+with open('MergedClusters.csv', 'r') as csvfile:
     pairs = list(csv.reader(csvfile, delimiter=','))
     for item in pairs:
         cluster_dictionary[int(item[1])] = []
 
     print(cluster_dictionary.keys())
     print(len(cluster_dictionary.keys()))
-    exit(0)
 
     for item in pairs:
         cluster_dictionary[int(item[1])].append(item[0])
