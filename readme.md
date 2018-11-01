@@ -21,8 +21,24 @@ Moreover, it enables parallel running of CONVEX on different clusters. Clusterin
 In the first step, the original file is splitted into the chunks, each of which contains 50K reads.
 To run **SplitFile.py** make sure you change the name of original file to the **reads.fasta** and put it to the **Clustering** folder. Then run as follows:
 ```
-baharlou@hpc-login3:/home/sina/ClusteringReads/Clustering$ python SplitFile.py
+ClusteringReads/Clustering$ python SplitFile.py
 ```
+After running, there should be a **hash_functions.csv** file and **chunk1.fasta** to **chunkn.fasta** files as the outputs.
+
+### Find MinHash Signatures:
+To find MinHash signatures, you should run **MPMH.py** file. Since **MPMH.py** uses multi processing to enhance the speed, 
+it is recommended to run it on a High Performance Computing Server(HPC) as follows:
+```
+ClusteringReads/Clustering$ sbatch MPMH.py
+```
+Otherwise, you can run it directly with python. Note that if the number of chunks is more than 20, you need to run MPMH.py for each batch of 20 chunks separately.
+For example if SplitFile.py generates 50 files chunk1.fasta to chunk50.fasta (2.5 Million reads) you need to run MPHM three times as follows:
+```
+ClusteringReads/Clustering$ sbatch MPMH.py
+ClusteringReads/Clustering$ sbatch MPMH.py 2
+ClusteringReads/Clustering$ sbatch MPMH.py 3
+```
+
 
 1) Fasta file trimming: python FastaPreparation.py
 2) Split Fasta file into the chunks: python SplitFile.py
