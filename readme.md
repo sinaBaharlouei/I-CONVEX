@@ -47,8 +47,30 @@ The output will be G.csv file.
 ClusteringReads/Clustering$ ./collector.sh
 ```
 
-1) Fasta file trimming: python FastaPreparation.py
-6) Validate Candidate Pairs: python ValidateCandidatePairs.py
-7) Cluster the polished graph: python Clustering.py
-8) Merge small clusters: python MergeClusters.py
-9) Create cluster directories as the input of CONVEX: python CreateClusterDirectories.py
+
+### Validate Candidate Pairs with a Convolutional Neural Network
+To validate the similarity of candidate pairs, a trained Convolutional Neural Network(CNN) should be executed on the obtained candidate pairs from the previous step. 
+
+```
+ClusteringReads/Clustering$ python FastaPreparation.py
+ClusteringReads/Clustering$ python ValidatePairs.py
+```
+After running **ValidatePairs.py**, there should be a Net.csv file as the output.
+
+
+### Clustering Final Similarity Graph:
+Now, we are prepare to run the clustering algorithm on the final similarity graph:
+```
+ClusteringReads/Clustering$ python Clustering.py
+```
+
+And then, we should merge all the mini clusters with the size less than 5:
+```
+ClusteringReads/Clustering$ python MergeClusters.py
+```
+
+### Create Cluster Directories:
+Finally, in order to run CONVEX on the different clusters, we should create a folder for each cluster:
+```
+ClusteringReads/Clustering$ python CreateClusterDirectories.py
+```
