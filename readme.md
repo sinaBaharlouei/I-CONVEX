@@ -1,13 +1,3 @@
-### Length of transcripts
-To compare each pair of transcripts, EDIT distance is an appropriate measurement which is equal to the minimum number of insertion and deletions
-converting one transcript to the another one. By using dynamic programming, EDIT distance could be computed; however, time complexity is quadratic in terms of
-strings length. One remedy for this problem is to apply hash functions on transcript to compress them to shorter signatures.
-We have used Binarized neural network and minHash signature for training appropriate hash functions.
-
-### Large scale dataset
-One basic assumption of the project is that the dataset is large scale and classic cluster algorithms are too slow and are not applicable.
-We have used Locality sensitive hashing for reducing candidate pairs for comparison.
-
 ## Generating dataset
 generateDataset.py
 pairsGenerator.py
@@ -39,12 +29,25 @@ ClusteringReads/Clustering$ sbatch MPMH.py 2
 ClusteringReads/Clustering$ sbatch MPMH.py 3
 ```
 
+### Map Candidate Similar Pairs to the Same Bucket
+Using MinHash signatures as a base of a family of Locality Sensitive Hash, we can map the similar candidate pairs of noisy reads into to the same bucket. Thus, after running 
+**MultiProcessLSH.py** the candidate similar pairs will be available in the **batch1.csv** to **batchn.csv** files. To obtain these files you should run the following command:
+```
+ClusteringReads/Clustering$ sbatch MultiProcessLSH.py
+```
+If you do not have access to an HPC server, you can run it as follows:
+```
+ClusteringReads/Clustering$ python MultiProcessLSH.py
+```
+
+### Collect All of the Candidate Pairs
+In this step, you should run ./collector.sh to obtain the final candidate pairs. This script will merge all **batch*.csv** files and will remove the duplicate rows.
+The output will be G.csv file.
+```
+ClusteringReads/Clustering$ ./collector.sh
+```
 
 1) Fasta file trimming: python FastaPreparation.py
-2) Split Fasta file into the chunks: python SplitFile.py
-3) Obtain MinHash signatures: python MPMH.py
-4) Find similar candidate pairs: python MultiProcessLSH.py
-5) Collect all the candidate pairs from different processes: ./collector.sh
 6) Validate Candidate Pairs: python ValidateCandidatePairs.py
 7) Cluster the polished graph: python Clustering.py
 8) Merge small clusters: python MergeClusters.py
