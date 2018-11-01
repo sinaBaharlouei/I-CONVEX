@@ -19,7 +19,10 @@ Moreover, it enables parallel running of CONVEX on different clusters. Clusterin
 
 ### Split the Original File:
 In the first step, the original file is splitted into the chunks, each of which contains 50K reads.
-To run SplitFile.py, make sure you change the name of original file to the **reads.fasta** and put it to the **Clustering** folder.
+To run **SplitFile.py** make sure you change the name of original file to the **reads.fasta** and put it to the **Clustering** folder. Then run as follows:
+```
+baharlou@hpc-login3:/home/sina/ClusteringReads/Clustering$ python SplitFile.py
+```
 
 1) Fasta file trimming: python FastaPreparation.py
 2) Split Fasta file into the chunks: python SplitFile.py
