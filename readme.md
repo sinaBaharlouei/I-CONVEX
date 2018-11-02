@@ -3,26 +3,27 @@ generateDataset.py
 pairsGenerator.py
 
 ## Cluster Noisy Reads
-Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset. 
-First, it decreases the order complexity of algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
-Moreover, it enables parallel running of CONVEX on different clusters. Clustering of a datsaet of noisy reads consists of the following steps:
+Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
+First, it decreases the order complexity of the algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
+Moreover, it enables the parallel running of CONVEX on different clusters. Clustering of a dataset of noisy reads consists of the following steps:
 
 ### Split the Original File:
-In the first step, the original file is splitted into the chunks, each of which contains 50K reads.
-To run **SplitFile.py** make sure you change the name of original file to the **reads.fasta** and put it to the **Clustering** folder. Then run as follows:
+In the first step, the original file is split into the chunks, each of which contains 50K reads.
+To run **SplitFile.py** make sure you change the name of the original file to the **reads.fasta** and put it to the **Clustering** folder. Then run as follows:
 ```
 ClusteringReads/Clustering$ python SplitFile.py
 ```
 After running, there should be a **hash_functions.csv** file and **chunk1.fasta** to **chunkn.fasta** files as the outputs.
 
 ### Find MinHash Signatures:
-To find MinHash signatures, you should run **MPMH.py** file. Since **MPMH.py** uses multi processing to enhance the speed, 
-it is recommended to run it on a High Performance Computing Server(HPC) as follows:
+To find MinHash signatures, you should run **MPMH.py** file. Since **MPMH.py** uses multiprocessing to enhance the speed, 
+it is recommended to run it on a High-Performance Computing Server(HPC) as follows:
 ```
 ClusteringReads/Clustering$ sbatch MPMH.py
 ```
-Otherwise, you can run it directly with python. Note that if the number of chunks is more than 20, you need to run MPMH.py for each batch of 20 chunks separately.
-For example if SplitFile.py generates 50 files chunk1.fasta to chunk50.fasta (2.5 Million reads) you need to run MPHM three times as follows:
+If an HPC server is not available, you can run it directly with python. Note that if the number of chunks is more than 20, you need to run MPMH.py for each batch of 20 chunks separately.
+For example, if **SplitFile.py** generates 50 files **chunk1.fasta** to **chunk50.fasta** (2.5 Million reads) you need to run **MPHM.py** three times as follows:
+
 ```
 ClusteringReads/Clustering$ sbatch MPMH.py
 ClusteringReads/Clustering$ sbatch MPMH.py 2
@@ -42,7 +43,7 @@ ClusteringReads/Clustering$ python MultiProcessLSH.py
 
 ### Collect All of the Candidate Pairs
 In this step, you should run ./collector.sh to obtain the final candidate pairs. This script will merge all **batch*.csv** files and will remove the duplicate rows.
-The output will be G.csv file.
+The output will be the G.csv file.
 ```
 ClusteringReads/Clustering$ ./collector.sh
 ```
@@ -59,7 +60,7 @@ After running **ValidatePairs.py**, there should be a Net.csv file as the output
 
 
 ### Clustering Final Similarity Graph:
-Now, we are prepare to run the clustering algorithm on the final similarity graph:
+Now, we prepare to run the clustering algorithm on the final similarity graph:
 ```
 ClusteringReads/Clustering$ python Clustering.py
 ```
