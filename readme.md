@@ -1,7 +1,8 @@
-## Generating dataset
-generateDataset.py
-pairsGenerator.py
-
+## Pre-requisites
+ Markup : * Bullet list
+              * Nested bullet
+                  * Sub-nested bullet etc
+          * Bullet list item 2
 ## Cluster Noisy Reads
 Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
 First, it decreases the order complexity of the algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
