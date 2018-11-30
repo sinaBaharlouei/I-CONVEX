@@ -116,3 +116,13 @@ filename = "cluster_batch" + str(number_of_batches) + '.sh'
 f = open(filename, "w+")
 f.write(S)
 f.close()
+
+
+S = ""
+for j in range(number_of_batches):
+    S += "sbatch cluster_batch" + str(j+1) + ".sh\n"
+
+filename = "run_convex.sh"
+f = open(filename, "w+")
+f.write(S)
+f.close()
