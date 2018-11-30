@@ -80,7 +80,7 @@ ClusteringReads/Clustering$ python CreateClusterDirectories.py
 ## Running CONVEX on pre-clusters:
 After obtaining the pre-clusters, we are ready to run CONVEX on each cluster. 
 
-## Running CONVEX on HPC:
+### Running CONVEX on HPC:
 First we need to run the following python script to create batch of clusters:
 
 ```
