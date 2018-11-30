@@ -9,8 +9,6 @@ import timeit
 import sys
 from Bio import SeqIO
 
-t_start = timeit.default_timer()
-
 
 def read_fasta_file(fileName):
     return list(SeqIO.parse(fileName, 'fasta'))
@@ -147,6 +145,7 @@ def bandHashFunction(integer_list):
     return hash_value
 
 
+t_start = timeit.default_timer()
 hash_functions = []
 with open('hash_functions.csv', 'r') as csvfile:
     pairs = list(csv.reader(csvfile, delimiter=','))
@@ -158,46 +157,45 @@ with open('hash_functions.csv', 'r') as csvfile:
     for pair in pairs:
         hash_functions.append([int(pair[0]), int(pair[1])])
 
-# Define an output queue
-my_q = mp.Queue()
-K = 15
-R = 1
-B = 10
+if __name__ == "__main__":
+    # Define an output queue
+    my_q = mp.Queue()
+    K = 15
+    R = 1
+    B = 10
+    jobs = []
 
-jobs = []
+    batch_index = 1
+    number_of_parameters = len(sys.argv)
+    if number_of_parameters > 1:
+        batch_index = int(sys.argv[1])
+    # batch_index = sys.argv[1]
 
-batch_index = 1
-number_of_parameters = len(sys.argv)
-if number_of_parameters > 1:
-    batch_index = int(sys.argv[1])
-# batch_index = sys.argv[1]
+    start = (batch_index - 1) * 20 + 1
+    end = start + 19
+    if nchunks < end:
+        end = nchunks
 
-start = (batch_index-1) * 20 + 1
-end = start + 19
-if nchunks < end:
-    end = nchunks
+    if start > end:
+        print("Error! Please execute the program without any parameters.")
+        exit(1)
+    print("Start: ", start)
+    print("End: ", end)
 
-if start > end:
-    print("Error! Please execute the program without any parameters.")
-    exit(1)
-print("Start: ", start)
-print("End: ", end)
+    for chunk_num in range(start, end + 1):
+        p = mp.Process(target=getMinHashFunctions, args=(K, R, B, chunk_num,))
+        jobs.append(p)
 
-for chunk_num in range(start, end + 1):
-    p = mp.Process(target=getMinHashFunctions, args=(K, R, B, chunk_num,))
-    jobs.append(p)
+    for p in jobs:
+        p.start()
 
-for p in jobs:
-    p.start()
+    # Setup a list of processes that we want to run
+    # processes = [mp.Process(target=getMinHashFunctions, args=(my_q,)) for x in range(10)]
 
-# Setup a list of processes that we want to run
-# processes = [mp.Process(target=getMinHashFunctions, args=(my_q,)) for x in range(10)]
+    # Exit the completed processes
+    for p in jobs:
+        p.join()
 
-# Exit the completed processes
-for p in jobs:
-    p.join()
+    t_end = timeit.default_timer()
 
-t_end = timeit.default_timer()
-
-
-print("Total time: ", t_end - t_start)
+    print("Total time: ", t_end - t_start)

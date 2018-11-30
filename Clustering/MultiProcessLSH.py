@@ -81,27 +81,28 @@ bands_list = list(bands_dict.values())
 bands_len = len(bands_dict)
 batch_size = bands_len // number_of_processors
 
-# Define an output queue
-my_q = mp.Queue()
-jobs = []
+if __name__ == "__main__":
+    # Define an output queue
+    my_q = mp.Queue()
+    jobs = []
 
-for i in range(number_of_processors - 1):
-    start = i * batch_size
-    end = start + batch_size
+    for i in range(number_of_processors - 1):
+        start = i * batch_size
+        end = start + batch_size
+        current_batch = bands_list[start:end]
+
+        p = mp.Process(target=generateGraph, args=(current_batch, i + 1,))
+        jobs.append(p)
+
+    start = (number_of_processors - 1) * batch_size
+    end = bands_len
     current_batch = bands_list[start:end]
-
-    p = mp.Process(target=generateGraph, args=(current_batch, i + 1,))
+    p = mp.Process(target=generateGraph, args=(current_batch, number_of_processors,))
     jobs.append(p)
 
-start = (number_of_processors - 1) * batch_size
-end = bands_len
-current_batch = bands_list[start:end]
-p = mp.Process(target=generateGraph, args=(current_batch, number_of_processors,))
-jobs.append(p)
+    for p in jobs:
+        p.start()
 
-for p in jobs:
-    p.start()
-
-# Exit the completed processes
-for p in jobs:
-    p.join()
+    # Exit the completed processes
+    for p in jobs:
+        p.join()
