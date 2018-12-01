@@ -77,7 +77,7 @@ Finally, in order to run CONVEX on the different clusters, we should create a fo
 ClusteringReads/Clustering$ python CreateClusterDirectories.py
 ```
 
-## Running CONVEX on pre-clusters:
+## Running CONVEX on Pre-clusters:
 After obtaining the pre-clusters, we are ready to run CONVEX on each cluster. 
 
 ### Running CONVEX on HPC:
@@ -87,3 +87,12 @@ First we need to run the following python script to create batch of clusters:
 ClusteringReads/Clustering$ python CreateSlurmFiles.py 20
 ```
 The parameter of this script is the number of clusters in each one of the batches. The default number is 20. 
+Therefore, you should run the following script:
+```
+ClusteringReads/Clustering$ ./run_convex.sh
+```
+### Collecting the Final Transcripts:
+To collect all the obtained transcripts from the different clusters, you need to run the following script:
+```
+ClusteringReads/Clustering$ python CollectTranscripts.py
+```
