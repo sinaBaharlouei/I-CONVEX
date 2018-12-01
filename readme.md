@@ -1,7 +1,7 @@
-## Pre-requisites
+## Prerequisites
 * [Python 2.7](https://www.python.org/download/releases/2.7/)
 * [Biopython](https://biopython.org/wiki/Download)  
-
+* [MPI](https://askubuntu.com/questions/1010438/how-can-i-install-mpich-library)
 
 ## Cluster Noisy Reads
 Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
