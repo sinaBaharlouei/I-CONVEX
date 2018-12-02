@@ -1,7 +1,12 @@
-## Pre-requisites
+**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm begins with the small-size prefixes, and estimate
+the abundances of these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them into the reads and solving a maximum likelihood estimation problem
+through the expectation maximization (EM) algorithm. 
+Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with size L+1)
+and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
+## Prerequisites
 * [Python 2.7](https://www.python.org/download/releases/2.7/)
 * [Biopython](https://biopython.org/wiki/Download)  
-
+* [MPI](https://askubuntu.com/questions/1010438/how-can-i-install-mpich-library)
 
 ## Cluster Noisy Reads
 Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
@@ -77,7 +82,7 @@ Finally, in order to run CONVEX on the different clusters, we should create a fo
 ClusteringReads/Clustering$ python CreateClusterDirectories.py
 ```
 
-## Running CONVEX on pre-clusters:
+## Running CONVEX on Pre-clusters:
 After obtaining the pre-clusters, we are ready to run CONVEX on each cluster. 
 
 ### Running CONVEX on HPC:
@@ -87,3 +92,14 @@ First we need to run the following python script to create batch of clusters:
 ClusteringReads/Clustering$ python CreateSlurmFiles.py 20
 ```
 The parameter of this script is the number of clusters in each one of the batches. The default number is 20. 
+Therefore, you should run the following script:
+```
+ClusteringReads/Clustering$ ./run_convex.sh
+```
+### Collecting the Final Transcripts:
+To collect all the obtained transcripts from the different clusters, you need to run the following script:
+```
+ClusteringReads/Clustering$ python CollectTranscripts.py
+```
+
+The final transcripts will be saved in the **final_transcripts.txt** file.
