@@ -24,7 +24,7 @@ Clustering of noisy reads before running CONVEX algorithm has several advantages
 First, it decreases the order complexity of the algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
 Moreover, it enables the parallel running of CONVEX on different clusters. 
 
-## Run Pre-clustering (Minimal version)
+## Run Pre-clustering (Basic version)
 If your input fasta file is not a large-scale one and you want to run it on your PC, follow the below instructions:
 1. Move your input fasta file to the Clustering Folder and rename it to reads.fasta.
 2. Run SplitFile.py to chunk the dataset:
@@ -36,9 +36,11 @@ If your input fasta file is not a large-scale one and you want to run it on your
     ClusteringReads/Clustering$ chmod 777 commands.sh
     ClusteringReads/Clustering$ ./commands.sh
     ```
-At the end, you should have a file MergedClusters.csv and a folder clusters containing subfolders each of which represents a cluster.
+At the end, the reads and their corresponding cluster identifiers will be written in **MergedClusters.csv**. Moreover, a folder clusters containing subfolders each of which represents a cluster
+will be created.
 
-## Run Pre-clustering on a High Performance Computing(HPC) server(Minimal version)
+## Run Pre-clustering on a High Performance Computing(HPC) server (Advanced version)
+Running Pre-clustering on an HPC server makes the pre-clustering part tremendously faster; However, it has more details compared to the basic version. 
 
 ### Split the Original File:
 In the first step, the original file is split into the chunks, each of which contains 50K reads.
