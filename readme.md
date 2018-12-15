@@ -1,6 +1,8 @@
-**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with the small-size prefixes, and estimate the abundances of these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them with the reads and solving a maximum likelihood estimation problem through the expectation maximization (EM) algorithm. 
-Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with size L+1)
-and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
+**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with a set of short prefixes(4 or 5), and estimates the abundances of 
+these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them with the reads and solving a maximum likelihood estimation problem
+through the expectation maximization (EM) algorithm. 
+Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with
+size L+1) and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
 
 # Prerequisites
 It is highly recommended to install the following packages via Anaconda. Download and install **Python 2.7 version** of Anaconda from [Anaconda, Python 2.7 Version](https://www.anaconda.com/download/#linux):
@@ -10,11 +12,11 @@ Then install the following packages via Conda:
 * [Igraph](https://anaconda.org/conda-forge/python-igraph)
 
 ## Install the GPU Version of Tensorflow
-For validating the similarity of candidate pairs, you need also to install **Tensorflow GPU-version**. You can follow the instructions in [here](https://medium.com/@naomi.fridman/install-conda-tensorflow-gpu-and-keras-on-ubuntu-18-04-1b403e740e25)
+For validating the similarity of the detected candidate pairs, you need to install **Tensorflow GPU-version**. You can follow the instructions in [here](https://medium.com/@naomi.fridman/install-conda-tensorflow-gpu-and-keras-on-ubuntu-18-04-1b403e740e25)
 to install it.
 
 ## Install the Message Passing Interface
-For running CONVEX algorithm after the pre-clustering stage, you need to install Message Passing Interface(MPI) with the following command:
+To run CONVEX algorithm after the pre-clustering stage, you need to install Message Passing Interface(MPI) with the following command:
 ```
 sudo apt install mpich
 ```
