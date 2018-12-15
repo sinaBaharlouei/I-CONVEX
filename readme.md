@@ -13,8 +13,12 @@ Then install the following packages via Conda.
 For validatiing candidate pairs, you need also to install **Tensorflow GPU-version**. You can follow the instructions in [here](https://medium.com/@naomi.fridman/install-conda-tensorflow-gpu-and-keras-on-ubuntu-18-04-1b403e740e25)
 to install it.
 
-For running CONVEX algorithm after the pre-clustering stage, you need to install MPI. Follow the instructions in below link:
-* [MPI](https://askubuntu.com/questions/1010438/how-can-i-install-mpich-library)
+For running CONVEX algorithm after the pre-clustering stage, you need to install Message Passing Interface(MPI) with the following command:
+```
+sudo apt install mpich
+```
+
+
 
 ## Cluster Noisy Reads
 Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
