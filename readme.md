@@ -1,4 +1,4 @@
-**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm begins with the small-size prefixes, and estimate the abundances of these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them with the reads and solving a maximum likelihood estimation problem through the expectation maximization (EM) algorithm. 
+**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with the small-size prefixes, and estimate the abundances of these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them with the reads and solving a maximum likelihood estimation problem through the expectation maximization (EM) algorithm. 
 Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with size L+1)
 and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
 
@@ -37,7 +37,7 @@ If your input fasta file is not a large-scale one and you want to run it on your
     ClusteringReads/Clustering$ chmod 777 commands.sh
     ClusteringReads/Clustering$ ./commands.sh
     ```
-At the end, the reads and their corresponding cluster identifiers will be written in **MergedClusters.csv**. Moreover, a folder **clusters/** containing subfolders each of which represents a cluster
+At the end, the reads and their corresponding cluster identifiers will be written in **MergedClusters.csv**. Moreover, a folder **Clusters/** which contains subfolders each of which represents a cluster
 will be created.
 
 ## Run Pre-clustering on a High-Performance Computing(HPC) Server (Advanced version)
@@ -114,13 +114,14 @@ ClusteringReads/Clustering$ python CreateClusterDirectories.py
 
 # Running CONVEX on Pre-clusters:
 After obtaining the pre-clusters, we are ready to run CONVEX on each cluster. First, we need to compile the following c files with MPI library:
+```
+ClusteringReads/Clustering$ mpicc -o conv CONVEXv16.c -lm
+ClusteringReads/Clustering$ mpicc -o post PostProcessingV3.c
+```
 
 
 ## Running CONVEX on HPC:
 First, we need to run the following python script to create batches of clusters:
-```
-ClusteringReads/Clustering$ python MergeClusters.py
-```
 
 ```
 ClusteringReads/Clustering$ python CreateSlurmFiles.py 20
