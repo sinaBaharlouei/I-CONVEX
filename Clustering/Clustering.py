@@ -11,7 +11,7 @@ def read_fasta_file(fileName):
 
 
 write_mode = True
-evaluation_mode = True
+evaluation_mode = False
 clusters = {}
 
 dataset = read_fasta_file('reads.fasta')
@@ -28,11 +28,6 @@ for item in dataset:
     clusters[item.id] = -1
 
 my_dict = []
-
-"""
-with open('unbalanced2MGT.csv', 'r') as csvfile:
-    cluster_ids = list(csv.reader(csvfile, delimiter=','))
-"""
 
 ground_truth_cluster_dict = {}
 ground_truth_predicted_dict = {}
@@ -98,7 +93,7 @@ for i in range(len(membership)):
 print(clusters)
 
 if write_mode:
-    with open('FinalClusters.csv', 'w', newline='') as f:  # Just use 'w' mode in 3.x
+    with open('FinalClusters.csv', 'wb') as f:  # Just use 'w' mode in 3.x
         print("Write to file ... ")
         w = csv. writer(f, delimiter=',')
         for key in clusters:
@@ -108,6 +103,9 @@ t5 = timeit.default_timer()
 print("Write time: ", t5 - t4)
 
 if evaluation_mode:
+    with open('unbalanced2MGT.csv', 'r') as csvfile:
+        cluster_ids = list(csv.reader(csvfile, delimiter=','))
+
     nodesClusterList = list(clusters.values())
     print("hi1")
     aListCount = {}

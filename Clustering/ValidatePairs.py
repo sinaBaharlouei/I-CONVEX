@@ -110,7 +110,7 @@ with tf.Session() as sess:
     # Check the values of the variables
 
     t1 = timeit.default_timer()
-    data_generator = read_next_batch('G4.csv', 'trimmed.fasta', 5000)
+    data_generator = read_next_batch('G.csv', 'trimmed.fasta', 5000)
 
     label_array = []
 
@@ -161,7 +161,7 @@ with tf.Session() as sess:
             last = timeit.default_timer()
             print(last - first)
 
-    with open("Net4.csv", 'w', newline='') as f:  # Just use 'w' mode in 3.x
+    with open("Net.csv", 'wb') as f:  # Just use 'w' mode in 3.x
         w = csv.writer(f, delimiter=',')
         for item in label_array:
             w.writerow([item])
