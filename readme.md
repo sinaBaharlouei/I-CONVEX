@@ -3,7 +3,7 @@ the abundances of these prefixes based on the given noisy reads dataset. The abu
 through the expectation maximization (EM) algorithm. 
 Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with size L+1)
 and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
-## Prerequisites
+# Prerequisites
 It is highly recommended to install the following packages via Anaconda. Download and install **Python 2.7 version** of Anaconda from [Anaconda, Python 2.7 Version](https://www.anaconda.com/download/#linux):
 Then install the following packages via Conda.
 * [Biopython](https://anaconda.org/anaconda/biopython)
@@ -19,11 +19,26 @@ sudo apt install mpich
 ```
 
 
-
-## Cluster Noisy Reads
+# Cluster Noisy Reads
 Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
 First, it decreases the order complexity of the algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
-Moreover, it enables the parallel running of CONVEX on different clusters. Clustering of a dataset of noisy reads consists of the following steps:
+Moreover, it enables the parallel running of CONVEX on different clusters. 
+
+## Run Pre-clustering (Minimal version)
+If your input fasta file is not a large-scale one and you want to run it on your PC, follow the below instructions:
+1. Move your input fasta file to the Clustering Folder and rename it to reads.fasta.
+2. Run SplitFile.py to chunk the dataset:
+    ```
+    ClusteringReads/Clustering$ python SplitFile.py
+    ```
+3. Run the **commands.sh** file as follows:
+    ```
+    ClusteringReads/Clustering$ chmod 777 commands.sh
+    ClusteringReads/Clustering$ ./commands.sh
+    ```
+At the end, you should have a file MergedClusters.csv and a folder clusters containing subfolders each of which represents a cluster.
+
+## Run Pre-clustering on a High Performance Computing(HPC) server(Minimal version)
 
 ### Split the Original File:
 In the first step, the original file is split into the chunks, each of which contains 50K reads.
