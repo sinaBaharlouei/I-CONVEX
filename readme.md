@@ -29,7 +29,7 @@ Moreover, it enables the parallel running of CONVEX on different clusters.
 
 ## Run Pre-clustering (Basic Version)
 If your input fasta file is not a large-scale one and you want to run it on your PC, follow the below instructions:
-1. Move your input fasta file to the Clustering Folder and rename it to reads.fasta.
+1. Move your input fasta file to the **Clustering** Folder and rename it to **reads.fasta**.
 2. Run SplitFile.py to chunk the dataset:
     ```
     ClusteringReads/Clustering$ python SplitFile.py
