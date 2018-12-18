@@ -1,4 +1,4 @@
-**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with a set of short prefixes(4 or 5), and estimates the abundances of 
+**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with a set of short prefixes(4 or 5) and estimates the abundances of 
 these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them with the reads and solving a maximum likelihood estimation problem
 through the expectation maximization (EM) algorithm. 
 Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with
@@ -16,7 +16,7 @@ For validating the similarity of the detected candidate pairs, you need to insta
 to install it.
 
 ## Install the Message Passing Interface
-To run CONVEX algorithm after the pre-clustering stage, you need to install Message Passing Interface(MPI) with the following command:
+To run the CONVEX algorithm after the pre-clustering stage, you need to install Message Passing Interface(MPI) with the following command:
 ```
 sudo apt install mpich
 ```
