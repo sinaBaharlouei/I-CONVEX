@@ -121,8 +121,15 @@ ClusteringReads/Clustering$ mpicc -o conv CONVEXv16.c -lm
 ClusteringReads/Clustering$ mpicc -o post PostProcessingV3.c
 ```
 
+## Running CONVEX on PC (Basic version):
+If you do not have access to an HPC server, you can run CONVEX on the obtained pre-clusters from the previous stage as follows:
+```
+ClusteringReads/Clustering$ python CreateConvexScript.py 8
+ClusteringReads/Clustering$ ./run_convex.sh
+```
+In the first command 8 denotes the number of cores assigned to the CONVEX. Make sure it is not greater than the maximum number of cores on your computer.
 
-## Running CONVEX on HPC:
+## Running CONVEX on HPC (Advanced version):
 First, we need to run the following python script to create batches of clusters:
 
 ```
