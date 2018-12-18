@@ -94,7 +94,10 @@ S += "python MultiProcessLSH.py\n"
 S += "chmod 777 collector.sh\n"
 S += "./collector.sh\n"
 S += "python FastaPreparation.py\n"
-S += "python ValidatePairs.py"
+S += "python ValidatePairs.py\n"
+S += "python Clustering.py\n"
+S += "python MergeClusters.py\n"
+S += "python CreateClusterDirectories.py"
 f = open("commands.sh", "w+")
 f.write(S)
 f.close()
