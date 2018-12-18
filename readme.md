@@ -1,25 +1,49 @@
-**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm begins with the small-size prefixes, and estimate
-the abundances of these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them into the reads and solving a maximum likelihood estimation problem
+**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with a set of short prefixes(4 or 5), and estimates the abundances of 
+these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them with the reads and solving a maximum likelihood estimation problem
 through the expectation maximization (EM) algorithm. 
-Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with size L+1)
-and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
-## Prerequisites
+Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with
+size L+1) and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
+
+# Prerequisites
 It is highly recommended to install the following packages via Anaconda. Download and install **Python 2.7 version** of Anaconda from [Anaconda, Python 2.7 Version](https://www.anaconda.com/download/#linux):
-Then install the following packages via Conda.
+Then install the following packages via Conda:
 * [Biopython](https://anaconda.org/anaconda/biopython)
 * [Matplotlib](https://anaconda.org/conda-forge/matplotlib)
 * [Igraph](https://anaconda.org/conda-forge/python-igraph)
 
-For validatiing candidate pairs, you need also to install **Tensorflow GPU-version**. You can follow the instructions in [here](https://medium.com/@naomi.fridman/install-conda-tensorflow-gpu-and-keras-on-ubuntu-18-04-1b403e740e25)
+## Install the GPU Version of Tensorflow
+For validating the similarity of the detected candidate pairs, you need to install **Tensorflow GPU-version**. You can follow the instructions in [here](https://medium.com/@naomi.fridman/install-conda-tensorflow-gpu-and-keras-on-ubuntu-18-04-1b403e740e25)
 to install it.
 
-For running CONVEX algorithm after the pre-clustering stage, you need to install MPI. Follow the instructions in below link:
-* [MPI](https://askubuntu.com/questions/1010438/how-can-i-install-mpich-library)
+## Install the Message Passing Interface
+To run CONVEX algorithm after the pre-clustering stage, you need to install Message Passing Interface(MPI) with the following command:
+```
+sudo apt install mpich
+```
 
-## Cluster Noisy Reads
+
+# Cluster Noisy Reads
 Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
 First, it decreases the order complexity of the algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
-Moreover, it enables the parallel running of CONVEX on different clusters. Clustering of a dataset of noisy reads consists of the following steps:
+Moreover, it enables the parallel running of CONVEX on different clusters. 
+
+## Run Pre-clustering (Basic Version)
+If your input fasta file is not a large-scale one and you want to run it on your PC, follow the below instructions:
+1. Move your input fasta file to the Clustering Folder and rename it to reads.fasta.
+2. Run SplitFile.py to chunk the dataset:
+    ```
+    ClusteringReads/Clustering$ python SplitFile.py
+    ```
+3. Run the **commands.sh** file as follows:
+    ```
+    ClusteringReads/Clustering$ chmod 777 commands.sh
+    ClusteringReads/Clustering$ ./commands.sh
+    ```
+At the end, the reads and their corresponding cluster identifiers will be written in **MergedClusters.csv**. Moreover, a folder **Clusters/** which contains subfolders each of which represents a cluster
+will be created.
+
+## Run Pre-clustering on a High-Performance Computing(HPC) Server (Advanced version)
+Running Pre-clustering on an HPC server makes the pre-clustering part tremendously faster; However, it has more details compared to the basic version. 
 
 ### Split the Original File:
 In the first step, the original file is split into the chunks, each of which contains 50K reads.
@@ -73,7 +97,7 @@ ClusteringReads/Clustering$ python ValidatePairs.py
 After running **ValidatePairs.py**, there should be a Net.csv file as the output.
 
 
-### Clustering Final Similarity Graph:
+### Clustering the Final Similarity Graph:
 Now, we prepare to run the clustering algorithm on the final similarity graph:
 ```
 ClusteringReads/Clustering$ python Clustering.py
@@ -90,11 +114,16 @@ Finally, in order to run CONVEX on the different clusters, we should create a fo
 ClusteringReads/Clustering$ python CreateClusterDirectories.py
 ```
 
-## Running CONVEX on Pre-clusters:
-After obtaining the pre-clusters, we are ready to run CONVEX on each cluster. 
+# Running CONVEX on Pre-clusters:
+After obtaining the pre-clusters, we are ready to run CONVEX on each cluster. First, we need to compile the following c files with MPI library:
+```
+ClusteringReads/Clustering$ mpicc -o conv CONVEXv16.c -lm
+ClusteringReads/Clustering$ mpicc -o post PostProcessingV3.c
+```
 
-### Running CONVEX on HPC:
-First we need to run the following python script to create batch of clusters:
+
+## Running CONVEX on HPC:
+First, we need to run the following python script to create batches of clusters:
 
 ```
 ClusteringReads/Clustering$ python CreateSlurmFiles.py 20
@@ -104,7 +133,7 @@ Therefore, you should run the following script:
 ```
 ClusteringReads/Clustering$ ./run_convex.sh
 ```
-### Collecting the Final Transcripts:
+## Collecting the Final Transcripts:
 To collect all the obtained transcripts from the different clusters, you need to run the following script:
 ```
 ClusteringReads/Clustering$ python CollectTranscripts.py
