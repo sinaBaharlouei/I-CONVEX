@@ -26,7 +26,7 @@ for i in range(len(cluster_ids)):
         cluster_ids[i][1] = int(cluster_ids[i][1]) + min_pos + 1
 
 
-with open('MergedClusters.csv', 'w', newline='') as f:  # Just use 'w' mode in 3.x
+with open('MergedClusters.csv', 'wb') as f:  # Just use 'w' mode in 3.x
     print("Write to file ... ")
     w = csv. writer(f, delimiter=',')
     for item in cluster_ids:
@@ -46,3 +46,4 @@ print(minimum)
 print(keys)
 size = sorted(keys.values(), reverse=True)
 print(size)
+

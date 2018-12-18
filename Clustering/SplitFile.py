@@ -84,3 +84,18 @@ with open('hash_functions.csv', 'wb') as f:
     w.writerow([r, b, k, number_of_chunks])
     for item in hash_functions:
         w.writerow([item[0], item[1]])
+
+"""Create Bash File"""
+S = ""
+run_counter = (number_of_chunks-1) // 20 + 1
+for i in range(run_counter):
+    S += "python MPMH.py " + str(i+1) + "\n"
+S += "python MultiProcessLSH.py\n"
+S += "chmod 777 collector.sh\n"
+S += "./collector.sh\n"
+S += "python FastaPreparation.py\n"
+S += "python ValidatePairs.py"
+f = open("commands.sh", "w+")
+f.write(S)
+f.close()
+
