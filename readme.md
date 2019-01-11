@@ -13,7 +13,11 @@ Then install the following packages via Conda:
 
 ## Install the GPU Version of Tensorflow
 For validating the similarity of the detected candidate pairs, you need to install **Tensorflow GPU-version**. You can follow the instructions in [here](https://medium.com/@naomi.fridman/install-conda-tensorflow-gpu-and-keras-on-ubuntu-18-04-1b403e740e25)
-to install it.
+to install it. It is easy to install GPU version of tensorflow via Conda:
+```
+conda install -c anaconda tensorflow-gpu 
+```
+
 
 ## Install the Message Passing Interface
 To run the CONVEX algorithm after the pre-clustering stage, you need to install Message Passing Interface(MPI) with the following command:
