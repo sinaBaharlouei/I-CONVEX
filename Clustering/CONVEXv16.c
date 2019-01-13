@@ -1686,7 +1686,11 @@ int updateCenters(int b, int* MprimeLoc, int Mprime, double* rho, int* TopRhoIdx
 			j++;
 	}
 	*MprimeLoc = j;
-
+        
+	if (j == 0)
+    	{
+        *MprimeLoc = 1;
+    	}
 
 	int n_incomplete = 0;
 /*
