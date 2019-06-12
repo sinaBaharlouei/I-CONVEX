@@ -1,4 +1,4 @@
-**CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with a set of short prefixes(4 or 5) and estimates the abundances of 
+**I-CONVEX** is an iterative algorithm for solving "de Novo Transcriptome Recovery from long reads" problem. This algorithm starts with a set of short prefixes(4 or 5) and estimates the abundances of 
 these prefixes based on the given noisy reads dataset. The abundance of these prefixes can be efficiently estimated by aligning them with the reads and solving a maximum likelihood estimation problem
 through the expectation maximization (EM) algorithm. 
 Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with
@@ -28,10 +28,10 @@ sudo apt install mpich
 ```
 
 
-# Cluster Noisy Reads
-Clustering of noisy reads before running CONVEX algorithm has several advantages over running CONVEX directly on the whole dataset.
+# Pre-cluster Noisy Reads
+Pre-clustering of noisy reads before running I-CONVEX algorithm has several advantages over running I-CONVEX directly on the whole dataset.
 First, it decreases the order complexity of the algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
-Moreover, it enables the parallel running of CONVEX on different clusters. 
+Moreover, it enables the parallel running of I-CONVEX on different clusters. 
 
 ## Run Pre-clustering (Basic Version)
 If your input fasta file is not a large-scale one and you want to run it on your PC, follow the below instructions:
@@ -115,27 +115,27 @@ ClusteringReads/Clustering$ python MergeClusters.py
 ```
 
 ### Create Cluster Directories:
-Finally, in order to run CONVEX on the different clusters, we should create a folder for each cluster:
+Finally, in order to run I-CONVEX on the different clusters, we should create a folder for each cluster:
 ```
 ClusteringReads/Clustering$ python CreateClusterDirectories.py
 ```
 
-# Running CONVEX on Pre-clusters:
-After obtaining the pre-clusters, we are ready to run CONVEX on each cluster. First, we need to compile the following c files with MPI library:
+# Running I-CONVEX on Pre-clusters:
+After obtaining the pre-clusters, we are ready to run I-CONVEX on each cluster. First, we need to compile the following c files with MPI library:
 ```
 ClusteringReads/Clustering$ mpicc -o conv CONVEXv16.c -lm
 ClusteringReads/Clustering$ mpicc -o post PostProcessingV3.c
 ```
 
-## Running CONVEX on PC (Basic version):
-If you do not have access to an HPC server, you can run CONVEX on the obtained pre-clusters from the previous stage as follows:
+## Running I-CONVEX on PC (Basic version):
+If you do not have access to an HPC server, you can run I-CONVEX on the obtained pre-clusters from the previous stage as follows:
 ```
 ClusteringReads/Clustering$ python CreateConvexScript.py 8
 ClusteringReads/Clustering$ ./run_convex.sh
 ```
-In the first command 8 denotes the number of cores assigned to the CONVEX. Make sure it is not greater than the maximum number of cores on your computer.
+In the first command 8 denotes the number of cores assigned to the I-CONVEX. Make sure it is not greater than the maximum number of cores on your computer.
 
-## Running CONVEX on HPC (Advanced version):
+## Running I-CONVEX on HPC (Advanced version):
 First, we need to run the following python script to create batches of clusters:
 
 ```
