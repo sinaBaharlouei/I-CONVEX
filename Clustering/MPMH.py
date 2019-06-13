@@ -160,9 +160,9 @@ with open('hash_functions.csv', 'r') as csvfile:
 if __name__ == "__main__":
     # Define an output queue
     my_q = mp.Queue()
-    K = 15
-    R = 1
-    B = 10
+    K = k_parameter
+    R = rows
+    B = bands
     jobs = []
 
     batch_index = 1
