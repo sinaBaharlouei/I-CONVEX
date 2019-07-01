@@ -4,7 +4,7 @@ through the expectation maximization (EM) algorithm.
 Therefore, all the high-abundant prefixes will be extended with one base(by adding either A, C, G, or T to the end of the each one of the prefixes with size L and obtaining four new prefixes with
 size L+1) and the non-frequent ones will be truncated. This procedure continues until the complete recovery of all the transcripts. 
 
-![](Final1_1.png)
+![](Fig.png)
 
 # Prerequisites
 It is highly recommended to install the following packages via Anaconda. Download and install **Python 2.7 version** of Anaconda from [Anaconda, Python 2.7 Version](https://www.anaconda.com/download/#linux):
