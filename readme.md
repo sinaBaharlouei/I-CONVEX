@@ -152,4 +152,4 @@ To collect all the obtained transcripts from the different clusters, you need to
 ClusteringReads/Clustering$ python CollectTranscripts.py
 ```
 
-The final transcripts will be saved in the **final_transcripts.txt** file.
+The final transcripts will be saved in both **final_transcripts.txt** and **final_transcripts.fasta** files.
