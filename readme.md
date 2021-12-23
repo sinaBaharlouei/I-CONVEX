@@ -33,7 +33,7 @@ Pre-clustering of noisy reads before running I-CONVEX algorithm has several adva
 First, it decreases the order complexity of the algorithm and eliminates its dependency to M, the number of transcripts (Centroids).
 Moreover, it enables the parallel running of I-CONVEX on different clusters. 
 
-## Run Pre-clustering (Basic Version)
+## Run Pre-clustering (Single-CPU Version)
 If your input fasta file is not a large-scale one and you want to run it on your PC, follow the below instructions:
 1. Move your input fasta file to the **Clustering** Folder and rename it to **reads.fasta**.
 2. Run SplitFile.py to chunk the dataset:
@@ -127,7 +127,7 @@ ClusteringReads/Clustering$ mpicc -o conv CONVEXv16.c -lm
 ClusteringReads/Clustering$ mpicc -o post PostProcessingV3.c
 ```
 
-## Running I-CONVEX on PC (Basic version):
+## Running I-CONVEX on PC (Single-CPU Version):
 If you do not have access to an HPC server, you can run I-CONVEX on the obtained pre-clusters from the previous stage as follows:
 ```
 ClusteringReads/Clustering$ python CreateConvexScript.py 8
