@@ -48,7 +48,7 @@ If your input fasta file is not a large-scale one and you want to run it on your
 At the end, the reads and their corresponding cluster identifiers will be written in **MergedClusters.csv**. Moreover, a folder **Clusters/** which contains subfolders each of which represents a cluster
 will be created.
 
-## Run Pre-clustering on a High-Performance Computing(HPC) Server (Advanced version)
+## Run Pre-clustering on a High-Performance Computing (HPC) Server (Multiple Cores Version)
 Running Pre-clustering on an HPC server makes the pre-clustering part tremendously faster; However, it has more details compared to the basic version. 
 
 ### Split the Original File:
@@ -135,7 +135,7 @@ ClusteringReads/Clustering$ ./run_convex.sh
 ```
 In the first command 8 denotes the number of cores assigned to the I-CONVEX. Make sure it is not greater than the maximum number of cores on your computer.
 
-## Running I-CONVEX on HPC (Advanced version):
+## Running I-CONVEX on HPC (Multiple Cores Version):
 First, we need to run the following python script to create batches of clusters:
 
 ```
